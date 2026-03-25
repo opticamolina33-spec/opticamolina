@@ -16,7 +16,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-primary text-white p-4 shadow-md">
+    <nav className="bg-primary text-black p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold tracking-wider">
           ÓPTICA MOLINA
