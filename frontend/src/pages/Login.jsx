@@ -19,13 +19,11 @@ const Login = () => {
         password
       });
 
-      // Guardamos los datos que nos devuelve el DTO del backend
       const { token, email: userEmail, roles } = response.data;
       localStorage.setItem('token', token);
       localStorage.setItem('email', userEmail);
       localStorage.setItem('roles', JSON.stringify(roles));
 
-      // Si es admin, lo mandamos al panel, si no, al home
       if (roles.includes('ROLE_ADMIN')) {
         navigate('/admin');
       } else {
@@ -51,22 +49,24 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-700 mb-1">Email</label>
+            <label className="block text-gray-700 mb-1 font-medium">Email</label>
             <input 
               type="email" 
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-secondary border-gray-300"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@email.com"
               required
             />
           </div>
           <div>
-            <label className="block text-gray-700 mb-1">Contraseña</label>
+            <label className="block text-gray-700 mb-1 font-medium">Contraseña</label>
             <input 
               type="password" 
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-secondary border-gray-300"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
               required
             />
           </div>
@@ -77,6 +77,17 @@ const Login = () => {
             Ingresar
           </button>
         </form>
+
+        {/* --- SECCIÓN DE REGISTRO --- */}
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <p className="text-gray-600 text-sm mb-4">¿Aún no tenés una cuenta?</p>
+          <button 
+            onClick={() => navigate('/register')} // Asegurate de que esta ruta exista en App.jsx
+            className="w-full bg-white border-2 border-primary text-primary hover:bg-gray-50 font-bold py-2 px-4 rounded transition-colors"
+          >
+            Registrarse en Óptica Molina
+          </button>
+        </div>
       </div>
     </div>
   );

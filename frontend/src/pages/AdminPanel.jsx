@@ -97,7 +97,7 @@ const AdminPanel = () => {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-secondary hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition-colors"
+          className="bg-blue-300 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition-colors"
         >
           + Nuevo Producto
         </button>

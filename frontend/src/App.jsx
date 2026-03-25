@@ -6,6 +6,7 @@ import Home from './pages/Home.jsx'; // Lo crearemos después
 import AdminPanel from './pages/AdminPanel.jsx';
 import Success from './pages/Success';
 import Failure from './pages/Failure';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/admin" element={<AdminPanel />} /> 
             <Route path="/success" element={<Success />} />
             <Route path="/failure" element={<Failure />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </div>
       </div>
