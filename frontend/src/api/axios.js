@@ -1,12 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-    // Si estás probando local, usá localhost. 
-    // Si ya desplegaste el backend, acá va la URL de Railway/Render.
-    baseURL: 'http://localhost:8080/api' 
+    // Si estás en localhost usa el puerto 8080, sino usa la URL de Railway
+    baseURL: window.location.hostname === 'localhost' 
+        ? 'http://localhost:8080/api' 
+        : 'https://opticamolina-production.up.railway.app/api'
 });
 
-// Este interceptor agarra el token del localStorage y lo mete en cada pedido
+// Interceptor para el token (Fundamental para el Admin de la Óptica)
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
