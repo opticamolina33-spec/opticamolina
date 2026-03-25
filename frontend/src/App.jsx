@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Home from './pages/Home'; // Lo crearemos después
 import AdminPanel from './pages/AdminPanel';
+import Success from './pages/Success';
+import Failure from './pages/Failure';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<AdminPanel />} /> 
+            <Route path="/success" element={<Success />} />
+            <Route path="/failure" element={<Failure />} />
           </Routes>
         </div>
       </div>
