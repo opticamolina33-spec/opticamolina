@@ -40,34 +40,50 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
   const handleSaveProduct = async (e) => {
     e.preventDefault();
 
+    // 1. Validaciones previas
     if (!newProduct.categoryId) return alert("Por favor, selecciona una categoría.");
     if (!newProduct.imagenUrl) return alert("Por favor, pega la URL de la imagen.");
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("No hay sesión activa. Por favor, volvé a loguearte.");
 
     setLoading(true);
 
     try {
-      // Recuperamos el token del Admin
-      const token = localStorage.getItem("token");
+      // 2. LIMPIEZA DEL OBJETO (Destructuring)
+      // Sacamos 'categoryId' del objeto para que NO se mande en el cuerpo del JSON,
+      // ya que el backend lo espera solo en la URL (@PathVariable).
+      const { categoryId, ...datosParaEnviar } = newProduct;
 
-      // Enviamos el JSON y adjuntamos el Token en los Headers
-      await api.post(`/admin/products/${newProduct.categoryId}`, {
-        ...newProduct,
+      // 3. ENVÍO DE DATOS
+      await api.post(`/admin/products/${categoryId}`, {
+        ...datosParaEnviar,
         precio: parseFloat(newProduct.precio),
         stock: parseInt(newProduct.stock),
-        porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0)
+        porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0),
+        tieneDescuento: !!newProduct.tieneDescuento // Aseguramos booleano
       }, {
         headers: {
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
       alert("¡Producto guardado exitosamente!");
-      onSuccess(); 
+      
+      if (onSuccess) onSuccess(); 
       resetForm();
       onClose();   
+
     } catch (error) {
       console.error("Error al guardar:", error);
-      alert("No se pudo guardar: " + (error.response?.data || "Error de red"));
+      
+      // Manejo específico del 403
+      if (error.response?.status === 403) {
+        alert("Error 403: No tenés permisos de administrador o el token expiró.");
+      } else {
+        alert("No se pudo guardar: " + (error.response?.data || "Error de red o servidor"));
+      }
     } finally {
       setLoading(false);
     }
