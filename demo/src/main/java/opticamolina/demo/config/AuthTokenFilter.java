@@ -25,30 +25,32 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        // Archivo: AuthTokenFilter.java
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-                // 1. EXTRAEMOS LOS ROLES DEL TOKEN
-                // Necesitás tener un método en jwtUtils que obtenga la lista de roles (Strings)
                 List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
+                List<GrantedAuthority> authorities;
 
-                // 2. CONVERTIMOS LOS STRINGS A "GrantedAuthority"
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority(role))
-                        .collect(Collectors.toList());
+                // Si los roles son nulos o vacíos, le asignamos una lista vacía para que no explote
+                if (roles != null) {
+                    authorities = roles.stream()
+                            .map(role -> new SimpleGrantedAuthority(role))
+                            .collect(Collectors.toList());
+                } else {
+                    authorities = new java.util.ArrayList<>();
+                }
 
-                // 3. PASAMOS LAS AUTHORITIES AL TOKEN (Ya no es null)
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            logger.error("No se pudo configurar la autenticación de usuario: " + e.getMessage());
+            logger.error("Error en autenticación: " + e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

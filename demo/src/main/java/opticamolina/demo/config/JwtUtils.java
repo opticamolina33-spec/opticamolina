@@ -40,15 +40,21 @@ public class JwtUtils {
                 .compact();
     }
 
-    // 2. NUEVO: Para que el AuthTokenFilter pueda leer los roles
+    // Asegurate de que el método de generación use .claim("roles", roles)
+// Y el de lectura sea así:
     public List<String> getRolesFromJwtToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        return claims.get("roles", List.class);
+            // Retornamos la lista de roles, o null si no existe (el Filter lo manejará)
+            return claims.get("roles", List.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String getUserNameFromJwtToken(String token) {
