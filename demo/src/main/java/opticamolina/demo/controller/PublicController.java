@@ -1,6 +1,7 @@
-// Archivo: src/main/java/opticamolina/demo/controllers/PublicController.java
+// Archivo: src/main/java/opticamolina/demo/controller/PublicController.java
 package opticamolina.demo.controller;
 
+import opticamolina.demo.model.Category;
 import opticamolina.demo.model.Product;
 import opticamolina.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,12 @@ public class PublicController {
 
     @Autowired
     private ProductService productService;
+
+    // ESTE ENDPOINT ES VITAL PARA QUE EL FORMULARIO DE REACT CARGUE LAS OPCIONES
+    @GetMapping("/categories")
+    public List<Category> getAllCategories() {
+        return productService.getAllCategories();
+    }
 
     @GetMapping("/products")
     public List<Product> getAllProducts() {

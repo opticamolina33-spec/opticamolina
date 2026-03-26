@@ -16,33 +16,27 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
     tamanio: '',
     material: '',
     forma: '',
-    imagenUrl: '', // <--- Ahora es un campo de texto para la URL
+    imagenUrl: '',
     tieneDescuento: false,
     porcentajeDescuento: 0,
     categoryId: ''
   });
 
+  // 1. CARGAMOS CATEGORÍAS (Ruta Pública, sin token)
   useEffect(() => {
     const fetchCategories = async () => {
-    try {
-      // Suponiendo que tu token lo guardaste en localStorage
-      const token = localStorage.getItem("token");
+      try {
+        // Le pegamos a la ruta pública que armamos en el backend
+        const res = await api.get("/public/categories");
+        setCategories(res.data);
+      } catch (err) {
+        console.error("Error cargando categorías:", err);
+      }
+    };
+    if (isOpen) fetchCategories();
+  }, [isOpen]);
 
-      const res = await api.get("/admin/categories", {
-        headers: {
-          Authorization: `Bearer ${token}`, // envía el JWT
-        },
-        withCredentials: true, // si usas cookies, opcional
-      });
-
-      setCategories(res.data);
-    } catch (err) {
-      console.error("Error cargando categorías:", err);
-    }
-  };
-  if (isOpen) fetchCategories();
-}, [isOpen]);
-
+  // 2. GUARDAMOS EL PRODUCTO (Ruta Privada, CON token)
   const handleSaveProduct = async (e) => {
     e.preventDefault();
 
@@ -52,12 +46,19 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      // Enviamos JSON directamente (sin FormData)
+      // Recuperamos el token del Admin
+      const token = localStorage.getItem("token");
+
+      // Enviamos el JSON y adjuntamos el Token en los Headers
       await api.post(`/admin/products/${newProduct.categoryId}`, {
         ...newProduct,
         precio: parseFloat(newProduct.precio),
         stock: parseInt(newProduct.stock),
         porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0)
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       alert("¡Producto guardado exitosamente!");

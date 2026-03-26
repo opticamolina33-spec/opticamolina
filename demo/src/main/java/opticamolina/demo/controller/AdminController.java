@@ -1,4 +1,4 @@
-// Archivo: src/main/java/opticamolina/demo/controllers/AdminController.java
+// Archivo: src/main/java/opticamolina/demo/controller/AdminController.java
 package opticamolina.demo.controller;
 
 import opticamolina.demo.model.Category;
@@ -32,24 +32,20 @@ public class AdminController {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Producto eliminado correctamente");
     }
-    // En opticamolina.demo.controllers.AdminController.java
 
-    // Editar un producto completo (Nombre, precio, etc.)
     @PutMapping("/products/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         return ResponseEntity.ok(productService.updateProduct(id, productDetails));
     }
 
-    // Endpoint rápido para el botón de "+" o "-" stock en el panel
     @PatchMapping("/products/{id}/stock")
     public ResponseEntity<Product> updateStockOnly(@PathVariable Long id, @RequestBody Map<String, Integer> update) {
-        Integer quantity = update.get("quantity"); // Ej: +5 o -2
+        Integer quantity = update.get("quantity");
         return ResponseEntity.ok(productService.updateStock(id, quantity));
     }
 
     @GetMapping("/products/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        // LLAMAMOS AL SERVICE, que es el que sabe hablar con el repo
         return ResponseEntity.ok(productService.getProductById(id));
     }
 }
