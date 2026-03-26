@@ -52,11 +52,25 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        product.setName(productDetails.getName());
-        product.setDescription(productDetails.getDescription());
-        product.setPrice(productDetails.getPrice());
-        product.setStock(productDetails.getStock()); // Actualización manual de stock
+        product.setNombre(productDetails.getNombre());
+        product.setMarca(productDetails.getMarca());
+        product.setDescripcion(productDetails.getDescripcion());
+        product.setPrecio(productDetails.getPrecio());
+        product.setStock(productDetails.getStock());
 
+        product.setColor(productDetails.getColor());
+        product.setTamanio(productDetails.getTamanio());
+        product.setMaterial(productDetails.getMaterial());
+        product.setForma(productDetails.getForma());
+        product.setImagenUrl(productDetails.getImagenUrl());
+
+        product.setTieneDescuento(productDetails.getTieneDescuento());
+        product.setPorcentajeDescuento(productDetails.getPorcentajeDescuento());
+
+// Si cambia de categoría
+        if (productDetails.getCategory() != null) {
+            product.setCategory(productDetails.getCategory());
+        }
         // Si cambia de categoría
         if (productDetails.getCategory() != null) {
             product.setCategory(productDetails.getCategory());

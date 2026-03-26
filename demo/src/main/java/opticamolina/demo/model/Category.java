@@ -1,4 +1,4 @@
-// Archivo: src/main/java/opticamolina/demo/models/Category.java
+// Archivo: src/main/java/opticamolina/demo/model/Category.java
 package opticamolina.demo.model;
 
 import jakarta.persistence.*;
