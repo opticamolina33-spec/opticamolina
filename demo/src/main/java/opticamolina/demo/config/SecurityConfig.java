@@ -37,7 +37,6 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    // CORS robusto directamente inyectado en la seguridad
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -59,14 +58,13 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .httpBasic(basic -> basic.disable()) // Evita bloqueos predeterminados de Spring
+                .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
-                        // USAMOS hasAnyAuthority para cubrir ambas posibilidades (con o sin prefijo)
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
                         .anyRequest().authenticated()
                 );

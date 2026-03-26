@@ -13,7 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // Archivo: AuthTokenFilter.java
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
@@ -34,13 +35,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
                 List<GrantedAuthority> authorities;
 
-                // Si los roles son nulos o vacíos, le asignamos una lista vacía para que no explote
+                // Evitamos el null pointer exception
                 if (roles != null) {
                     authorities = roles.stream()
                             .map(role -> new SimpleGrantedAuthority(role))
                             .collect(Collectors.toList());
                 } else {
-                    authorities = new java.util.ArrayList<>();
+                    authorities = new ArrayList<>();
                 }
 
                 UsernamePasswordAuthenticationToken authentication =
