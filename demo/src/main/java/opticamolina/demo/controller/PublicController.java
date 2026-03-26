@@ -5,6 +5,7 @@ import opticamolina.demo.model.Category;
 import opticamolina.demo.model.Product;
 import opticamolina.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,6 @@ public class PublicController {
     @Autowired
     private ProductService productService;
 
-    // ESTE ENDPOINT ES VITAL PARA QUE EL FORMULARIO DE REACT CARGUE LAS OPCIONES
     @GetMapping("/categories")
     public List<Category> getAllCategories() {
         return productService.getAllCategories();
@@ -30,5 +30,12 @@ public class PublicController {
     @GetMapping("/products/category/{categoryId}")
     public List<Product> getByCategory(@PathVariable Long categoryId) {
         return productService.getProductsByCategory(categoryId);
+    }
+
+    // --- CORREGIDO: Ya no usa .map() porque el Service devuelve Product directamente ---
+    @GetMapping("/products/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 }

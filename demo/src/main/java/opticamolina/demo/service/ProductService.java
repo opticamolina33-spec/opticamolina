@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -19,7 +20,6 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    // --- Categorías ---
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);
     }
@@ -28,7 +28,6 @@ public class ProductService {
         return categoryRepository.findAll();
     }
 
-    // --- Productos ---
     public Product saveProduct(Product product, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -57,21 +56,14 @@ public class ProductService {
         product.setDescripcion(productDetails.getDescripcion());
         product.setPrecio(productDetails.getPrecio());
         product.setStock(productDetails.getStock());
-
         product.setColor(productDetails.getColor());
         product.setTamanio(productDetails.getTamanio());
         product.setMaterial(productDetails.getMaterial());
         product.setForma(productDetails.getForma());
         product.setImagenUrl(productDetails.getImagenUrl());
-
         product.setTieneDescuento(productDetails.getTieneDescuento());
         product.setPorcentajeDescuento(productDetails.getPorcentajeDescuento());
 
-// Si cambia de categoría
-        if (productDetails.getCategory() != null) {
-            product.setCategory(productDetails.getCategory());
-        }
-        // Si cambia de categoría
         if (productDetails.getCategory() != null) {
             product.setCategory(productDetails.getCategory());
         }
@@ -79,7 +71,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    // Método específico para "sacar" o "agregar" unidades rápidamente
     public Product updateStock(Long id, Integer quantity) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
@@ -90,7 +81,7 @@ public class ProductService {
         product.setStock(nuevoStock);
         return productRepository.save(product);
     }
-    // En ProductService.java
+
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
