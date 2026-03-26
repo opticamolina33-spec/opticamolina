@@ -45,49 +45,34 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
     if (!newProduct.imagenUrl) return alert("Por favor, pega la URL de la imagen.");
 
     const token = localStorage.getItem("token");
-    if (!token) return alert("No hay sesión activa. Por favor, volvé a loguearte.");
+    
+    // LOG DE CONTROL: Copiá esto en la consola para ver si el token existe
+    console.log("Token enviado:", token); 
+
+    if (!token) return alert("Sesión expirada. Logueate de nuevo.");
 
     setLoading(true);
+    const { categoryId, ...datosParaEnviar } = newProduct;
 
     try {
-      // 2. LIMPIEZA DEL OBJETO (Destructuring)
-      // Sacamos 'categoryId' del objeto para que NO se mande en el cuerpo del JSON,
-      // ya que el backend lo espera solo en la URL (@PathVariable).
-      const { categoryId, ...datosParaEnviar } = newProduct;
-
-      // 3. ENVÍO DE DATOS
-      await api.post(`/admin/products/${categoryId}`, {
-        ...datosParaEnviar,
-        precio: parseFloat(newProduct.precio),
-        stock: parseInt(newProduct.stock),
-        porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0),
-        tieneDescuento: !!newProduct.tieneDescuento // Aseguramos booleano
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      alert("¡Producto guardado exitosamente!");
-      
-      if (onSuccess) onSuccess(); 
-      resetForm();
-      onClose();   
-
+        await api.post(`/admin/products/${categoryId}`, {
+            ...datosParaEnviar,
+            precio: parseFloat(newProduct.precio),
+            stock: parseInt(newProduct.stock),
+            porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0)
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}` // Sin comillas extras
+            }
+        });
+        // ... resto del código
     } catch (error) {
-      console.error("Error al guardar:", error);
-      
-      // Manejo específico del 403
-      if (error.response?.status === 403) {
-        alert("Error 403: No tenés permisos de administrador o el token expiró.");
-      } else {
-        alert("No se pudo guardar: " + (error.response?.data || "Error de red o servidor"));
-      }
+        console.error("DEBUG ERROR 403:", error.response); // ESTO TE VA A DECIR LA VERDAD
+        alert("Error 403: Revisá si tu usuario tiene el rol ADMIN en la DB.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const resetForm = () => {
     setNewProduct({
