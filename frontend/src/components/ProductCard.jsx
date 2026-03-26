@@ -3,20 +3,16 @@ import api from '../api/axios';
 
 const ProductCard = ({ product }) => {
   
-  // Función temporal para probar Mercado Pago (luego la mejoraremos)
   const handleBuy = async () => {
     try {
-      // Le pegamos al backend con los datos básicos del producto
+      // Usamos 'nombre' y 'precio' que es lo que trae tu objeto
       const response = await api.post('/payments/create', {
-        title: product.name,
-        price: product.price,
-        quantity: 1 // Por defecto compramos de a uno en este flujo rápido
+        title: product.nombre, 
+        price: product.precio,
+        quantity: 1 
       });
 
-      // El backend nos devuelve la URL de Mercado Pago (init_point)
       const { url } = response.data;
-      
-      // Redirigimos al usuario a la pasarela de pago
       window.location.href = url;
 
     } catch (error) {
@@ -27,30 +23,29 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
-      {/* Imagen del producto (placeholder por ahora) */}
       <img 
-        src={`https://via.placeholder.com/300x200?text=${product.name}`} 
-        alt={product.name}
+        src={product.imagenUrl || `https://via.placeholder.com/300x200?text=${product.nombre}`} 
+        alt={product.nombre}
         className="w-full h-48 object-cover"
       />
       
       <div className="p-5 flex-grow flex flex-col">
-        {/* Categoría con estilo de badge */}
         <span className="inline-block bg-secondary bg-opacity-20 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold uppercase tracking-wider mb-2 w-fit">
           {product.category?.name || 'Óptica'}
         </span>
         
         <h3 className="text-xl font-bold text-primary mb-1 truncate">
-          {product.name}
+          {product.nombre} {/* Cambiado de .name a .nombre */}
         </h3>
         
         <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">
-          {product.description || 'Anteojos de alta calidad disponibles en Óptica Molina.'}
+          {product.descripcion || 'Anteojos de alta calidad disponibles en Óptica Molina.'} {/* Cambiado de .description a .descripcion */}
         </p>
         
         <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
           <span className="text-2xl font-extrabold text-green-700">
-            ${product.price.toLocaleString('es-AR')}
+            {/* Agregamos el "?" por seguridad para que no explote si el precio demora en cargar */}
+            ${product.precio?.toLocaleString('es-AR') || '0'} 
           </span>
           
           {product.stock > 0 ? (
