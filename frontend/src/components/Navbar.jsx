@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  // Chequeamos de forma sencilla si el usuario está logueado
   const token = localStorage.getItem('token');
   const userRoles = JSON.parse(localStorage.getItem('roles')) || [];
   const isAdmin = userRoles.includes('ROLE_ADMIN');
@@ -16,36 +15,42 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-primary text-black p-4 shadow-md">
+    <nav className="bg-[#0a0a0a] text-white py-4 px-6 sticky top-0 z-50 shadow-xl border-b border-[#222]">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold tracking-wider">
-        <img 
-          src="/IMG_3486.jpg" 
-          alt="Logo Óptica Molina" 
-          className="h-10 w-auto"
-        />
-          ÓPTICA MOLINA
+        {/* Logo con branding */}
+        <Link to="/" className="flex items-center gap-3 group">
+          <img 
+            src="/IMG_3486.jpg" 
+            alt="Logo Óptica Molina" 
+            className="h-10 w-auto rounded-sm brightness-110 group-hover:scale-105 transition-transform"
+          />
+          <span className="hidden md:block text-xl font-black tracking-[0.2em] uppercase italic">
+            MOLINA
+          </span>
         </Link>
-        <div className="space-x-4">
-          <Link to="/" className="hover:text-secondary transition-colors">Catálogo</Link>
+
+        <div className="flex items-center space-x-8">
+          <Link to="/" className="text-sm font-medium hover:text-[#801a4d] transition-colors tracking-widest uppercase">
+            Catálogo
+          </Link>
           
           {isAdmin && (
-            <Link to="/admin" className="hover:text-secondary font-semibold text-yellow-300">
-              Panel Admin
+            <Link to="/admin" className="text-sm font-bold text-amber-500 hover:text-amber-400 transition-colors uppercase">
+              Admin
             </Link>
           )}
 
           {token ? (
             <button 
               onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition-colors"
+              className="border border-[#4a0e2e] text-[#ff4d4d] hover:bg-[#4a0e2e] hover:text-white px-4 py-1.5 rounded-full text-xs font-bold transition-all uppercase tracking-tighter"
             >
-              Salir
+              Cerrar Sesión
             </button>
           ) : (
             <Link 
               to="/login" 
-              className="bg-secondary hover:bg-blue-400 text-primary font-semibold px-4 py-2 rounded transition-colors"
+              className="bg-white text-black hover:bg-[#4a0e2e] hover:text-white px-6 py-2 rounded-full text-xs font-black transition-all uppercase tracking-widest"
             >
               Ingresar
             </Link>
