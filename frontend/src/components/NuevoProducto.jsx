@@ -7,72 +7,53 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
 
   const [newProduct, setNewProduct] = useState({
-    nombre: '',
-    marca: '',
-    descripcion: '',
-    precio: '',
-    stock: '',
-    color: '',
-    tamanio: '',
-    material: '',
-    forma: '',
-    imagenUrl: '',
-    tieneDescuento: false,
-    porcentajeDescuento: 0,
-    categoryId: ''
+    nombre: '', marca: '', descripcion: '', precio: '', stock: '',
+    color: '', tamanio: '', material: '', forma: '', imagenUrl: '',
+    tieneDescuento: false, porcentajeDescuento: 0, categoryId: ''
   });
 
-  // 1. CARGAMOS CATEGORÍAS (Ruta Pública, sin token)
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        // Le pegamos a la ruta pública que armamos en el backend
         const res = await api.get("/public/categories");
         setCategories(res.data);
-      } catch (err) {
-        console.error("Error cargando categorías:", err);
-      }
+      } catch (err) { console.error("Error:", err); }
     };
     if (isOpen) fetchCategories();
   }, [isOpen]);
 
-  // 2. GUARDAMOS EL PRODUCTO (Ruta Privada, CON token)
   const handleSaveProduct = async (e) => {
     e.preventDefault();
-
-    // 1. Validaciones previas
-    if (!newProduct.categoryId) return alert("Por favor, selecciona una categoría.");
-    if (!newProduct.imagenUrl) return alert("Por favor, pega la URL de la imagen.");
+    if (!newProduct.categoryId || !newProduct.imagenUrl) {
+      return alert("Faltan datos críticos (Categoría o Imagen).");
+    }
 
     const token = localStorage.getItem("token");
-    
-    // LOG DE CONTROL: Copiá esto en la consola para ver si el token existe
-    console.log("Token enviado:", token); 
-
-    if (!token) return alert("Sesión expirada. Logueate de nuevo.");
+    if (!token) return alert("Sesión expirada.");
 
     setLoading(true);
     const { categoryId, ...datosParaEnviar } = newProduct;
 
     try {
-        await api.post(`/admin/products/${categoryId}`, {
-            ...datosParaEnviar,
-            precio: parseFloat(newProduct.precio),
-            stock: parseInt(newProduct.stock),
-            porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0)
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}` // Sin comillas extras
-            }
-        });
-        // ... resto del código
+      await api.post(`/admin/products/${categoryId}`, {
+        ...datosParaEnviar,
+        precio: parseFloat(newProduct.precio),
+        stock: parseInt(newProduct.stock),
+        porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0)
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      onSuccess();
+      resetForm();
+      onClose();
     } catch (error) {
-        console.error("DEBUG ERROR 403:", error.response); // ESTO TE VA A DECIR LA VERDAD
-        alert("Error 403: Revisá si tu usuario tiene el rol ADMIN en la DB.");
+      console.error("Error:", error.response);
+      alert("Error al guardar. Verificá permisos de ADMIN.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   const resetForm = () => {
     setNewProduct({
@@ -84,130 +65,133 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
 
   if (!isOpen) return null;
 
+  // Clase para los inputs oscuros reutilizable
+  const inputClass = "w-full bg-[#111] border border-[#222] text-white p-3 rounded-xl focus:border-[#4a0e2e] focus:ring-1 focus:ring-[#4a0e2e] outline-none transition-all placeholder:text-gray-600 font-medium";
+  const labelClass = "block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2 ml-1";
+
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-8 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex justify-center items-center z-[100] p-4">
+      <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-[2.5rem] shadow-2xl w-full max-w-4xl p-8 md:p-12 max-h-[90vh] overflow-y-auto custom-scrollbar">
         
-        <div className="flex justify-between items-center mb-6 border-b pb-4">
-          <h2 className="text-2xl font-bold text-slate-800">📦 Cargar Nuevo Producto</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
+        <div className="flex justify-between items-center mb-10">
+          <div>
+            <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">Nueva Pieza</h2>
+            <p className="text-[#4a0e2e] text-[10px] font-bold uppercase tracking-[0.3em]">Registro de Colección</p>
+          </div>
+          <button onClick={onClose} className="text-gray-600 hover:text-white transition-colors text-4xl font-light">&times;</button>
         </div>
 
-        <form onSubmit={handleSaveProduct} className="space-y-6">
+        <form onSubmit={handleSaveProduct} className="space-y-8">
           
-          {/* SECCIÓN 1: IMAGEN Y CATEGORÍA */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+          {/* SECCIÓN 1: IDENTIDAD VISUAL */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#111]/50 p-6 rounded-3xl border border-[#1a1a1a]">
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">URL de la Imagen</label>
+              <label className={labelClass}>Enlace de Imagen</label>
               <input 
                 type="text" 
-                placeholder="https://ejemplo.com/anteojo.jpg" 
-                className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" 
+                placeholder="https://imgur.com/..." 
+                className={inputClass} 
                 value={newProduct.imagenUrl} 
                 onChange={(e) => setNewProduct({...newProduct, imagenUrl: e.target.value})} 
                 required 
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Categoría</label>
+              <label className={labelClass}>Categoría Curada</label>
               <select 
-                className="w-full p-2.5 border rounded-lg bg-white font-medium focus:ring-2 focus:ring-blue-400 outline-none" 
+                className={inputClass} 
                 value={newProduct.categoryId} 
                 onChange={(e) => setNewProduct({...newProduct, categoryId: e.target.value})}
                 required
               >
-                <option value="">-- Seleccionar --</option>
+                <option value="" className="bg-[#0a0a0a]">-- Seleccionar --</option>
                 {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  <option key={cat.id} value={cat.id} className="bg-[#0a0a0a]">{cat.name}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* SECCIÓN 2: DATOS PRINCIPALES */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Modelo / Nombre</label>
-              <input type="text" placeholder="Ej: Aviator Classic" className="w-full p-2.5 border rounded-lg" value={newProduct.nombre} onChange={(e) => setNewProduct({...newProduct, nombre: e.target.value})} required />
+          {/* SECCIÓN 2: DATOS COMERCIALES */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Nombre del Modelo</label>
+              <input type="text" placeholder="Ej: Molina Aviator" className={inputClass} value={newProduct.nombre} onChange={(e) => setNewProduct({...newProduct, nombre: e.target.value})} required />
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Marca</label>
-              <input type="text" placeholder="Ej: Ray-Ban" className="w-full p-2.5 border rounded-lg" value={newProduct.marca} onChange={(e) => setNewProduct({...newProduct, marca: e.target.value})} required />
+              <label className={labelClass}>Precio (ARS)</label>
+              <input type="number" placeholder="0.00" className={`${inputClass} font-black text-[#801a4d] italic`} value={newProduct.precio} onChange={(e) => setNewProduct({...newProduct, precio: e.target.value})} required />
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Precio ($)</label>
-              <input type="number" placeholder="0.00" className="w-full p-2.5 border rounded-lg font-bold text-green-700" value={newProduct.precio} onChange={(e) => setNewProduct({...newProduct, precio: e.target.value})} required />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Stock Inicial</label>
-              <input type="number" placeholder="Ej: 10" className="w-full p-2.5 border rounded-lg" value={newProduct.stock} onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})} required />
+              <label className={labelClass}>Stock</label>
+              <input type="number" placeholder="Cant." className={inputClass} value={newProduct.stock} onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})} required />
             </div>
           </div>
 
-          {/* SECCIÓN 3: ESPECIFICACIONES (DETALLES TÉCNICOS) */}
-          <div className="bg-slate-50 p-4 rounded-xl space-y-4 border border-slate-200">
-            <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest">Especificaciones Técnicas</h3>
+          {/* SECCIÓN 3: ESPECIFICACIONES TÉCNICAS */}
+          <div className="bg-[#050505] p-8 rounded-3xl border border-[#1a1a1a] space-y-6 shadow-inner">
+            <h3 className="text-[11px] font-black uppercase text-[#4a0e2e] tracking-[0.4em] text-center mb-4">Detalles de Fabricación</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase">Color</label>
-                <input type="text" placeholder="Negro" className="w-full p-2 border rounded" value={newProduct.color} onChange={(e) => setNewProduct({...newProduct, color: e.target.value})} />
+                <label className={labelClass}>Color</label>
+                <input type="text" placeholder="Mate Black" className={inputClass} value={newProduct.color} onChange={(e) => setNewProduct({...newProduct, color: e.target.value})} />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase">Tamaño</label>
-                <input type="text" placeholder="52-18" className="w-full p-2 border rounded" value={newProduct.tamanio} onChange={(e) => setNewProduct({...newProduct, tamanio: e.target.value})} />
+                <label className={labelClass}>Calibre</label>
+                <input type="text" placeholder="Medium" className={inputClass} value={newProduct.tamanio} onChange={(e) => setNewProduct({...newProduct, tamanio: e.target.value})} />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase">Material</label>
-                <input type="text" placeholder="Metal" className="w-full p-2 border rounded" value={newProduct.material} onChange={(e) => setNewProduct({...newProduct, material: e.target.value})} />
+                <label className={labelClass}>Material</label>
+                <input type="text" placeholder="Acetato" className={inputClass} value={newProduct.material} onChange={(e) => setNewProduct({...newProduct, material: e.target.value})} />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase">Forma</label>
-                <input type="text" placeholder="Gota" className="w-full p-2 border rounded" value={newProduct.forma} onChange={(e) => setNewProduct({...newProduct, forma: e.target.value})} />
+                <label className={labelClass}>Silueta</label>
+                <input type="text" placeholder="Square" className={inputClass} value={newProduct.forma} onChange={(e) => setNewProduct({...newProduct, forma: e.target.value})} />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Descripción</label>
-              <textarea placeholder="Detalles adicionales del producto..." className="w-full p-2.5 border rounded-lg h-20 resize-none" value={newProduct.descripcion} onChange={(e) => setNewProduct({...newProduct, descripcion: e.target.value})} />
+              <label className={labelClass}>Reseña del Producto</label>
+              <textarea placeholder="Describe la exclusividad de esta pieza..." className={`${inputClass} h-24 resize-none`} value={newProduct.descripcion} onChange={(e) => setNewProduct({...newProduct, descripcion: e.target.value})} />
             </div>
           </div>
 
-          {/* DESCUENTO */}
-          <div className="flex items-center gap-6 bg-yellow-50 p-4 rounded-xl border border-yellow-100">
-            <div className="flex items-center gap-2">
+          {/* PROMOCIÓN */}
+          <div className="flex items-center gap-8 bg-[#4a0e2e]/5 p-6 rounded-3xl border border-[#4a0e2e]/10">
+            <div className="flex items-center gap-3">
               <input 
                 type="checkbox" 
                 id="promo"
-                className="w-6 h-6 accent-yellow-600"
+                className="w-5 h-5 accent-[#4a0e2e] bg-[#111] border-[#222]"
                 checked={newProduct.tieneDescuento} 
                 onChange={(e) => setNewProduct({...newProduct, tieneDescuento: e.target.checked})} 
               />
-              <label htmlFor="promo" className="text-sm font-bold text-yellow-800">Activar Oferta</label>
+              <label htmlFor="promo" className="text-xs font-black text-gray-300 uppercase tracking-widest cursor-pointer">Activar Beneficio</label>
             </div>
             {newProduct.tieneDescuento && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4 animate-fade-in">
                 <input 
                   type="number" 
                   placeholder="%" 
-                  className="w-20 p-2 border border-yellow-300 rounded-lg text-center font-bold text-yellow-700" 
+                  className="w-20 bg-[#111] border border-[#4a0e2e]/50 text-[#801a4d] p-2 rounded-lg text-center font-black" 
                   value={newProduct.porcentajeDescuento} 
                   onChange={(e) => setNewProduct({...newProduct, porcentajeDescuento: e.target.value})} 
                 />
-                <span className="text-yellow-700 font-bold">% de descuento</span>
+                <span className="text-[10px] text-[#4a0e2e] font-black uppercase tracking-widest italic">% OFF</span>
               </div>
             )}
           </div>
 
-          {/* BOTONES */}
-          <div className="flex justify-end gap-4 pt-4">
-            <button type="button" onClick={onClose} className="px-6 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-all">
-              Descartar
+          {/* ACCIONES */}
+          <div className="flex justify-end gap-6 pt-6 border-t border-[#1a1a1a]">
+            <button type="button" onClick={onClose} className="text-[11px] font-black text-gray-600 hover:text-white uppercase tracking-[0.3em] transition-all">
+              Cancelar
             </button>
             <button 
               type="submit" 
               disabled={loading}
-              className={`px-12 py-3 bg-slate-800 text-white rounded-xl font-bold shadow-xl transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600 hover:-translate-y-1'}`}
+              className={`px-16 py-5 bg-white text-black rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] shadow-2xl transition-all ${loading ? 'opacity-30' : 'hover:bg-[#4a0e2e] hover:text-white hover:-translate-y-1 transform active:scale-95'}`}
             >
-              {loading ? 'Guardando...' : 'FINALIZAR CARGA'}
+              {loading ? 'Procesando...' : 'Confirmar Registro'}
             </button>
           </div>
         </form>

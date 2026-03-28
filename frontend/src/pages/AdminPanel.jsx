@@ -1,4 +1,5 @@
- import { useState, useEffect } from 'react';
+// Archivo: src/pages/AdminPanel.jsx
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import NuevoProducto from '../components/NuevoProducto';
@@ -32,7 +33,7 @@ const AdminPanel = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("¿Seguro que querés eliminarlo?")) {
+    if (window.confirm("¿Estás seguro de que querés eliminar esta pieza de la colección?")) {
       try {
         await api.delete(`/admin/products/${id}`);
         fetchData();
@@ -41,51 +42,103 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-primary">Panel Óptica Molina</h1>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"
-        >
-          + Cargar Anteojo
-        </button>
+    <div className="min-h-screen bg-[#050505] text-gray-300 pb-20 page-transition">
+      <div className="max-w-7xl mx-auto px-6 pt-12">
+        
+        {/* Header del Panel */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6 border-b border-[#1a1a1a] pb-10">
+          <div>
+            <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">
+              Gestión de Inventario
+            </h1>
+            <p className="text-[#801a4d] text-[10px] font-black tracking-[0.4em] uppercase mt-2">
+              Óptica Molina — Control Center
+            </p>
+          </div>
+          
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="group relative overflow-hidden bg-white text-black font-black py-4 px-10 rounded-2xl shadow-2xl hover:bg-[#4a0e2e] hover:text-white transition-all duration-500 uppercase tracking-[0.2em] text-xs transform active:scale-95"
+          >
+            <span className="relative z-10">+ Cargar Nuevo Modelo</span>
+          </button>
+        </div>
+
+        {/* Tabla Minimalista Dark */}
+        <div className="bg-[#0a0a0a] rounded-[2.5rem] overflow-hidden border border-[#1a1a1a] shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="bg-[#111] text-gray-500 border-b border-[#1a1a1a]">
+                  <th className="py-6 px-8 text-left text-[10px] font-black uppercase tracking-[0.3em]">Pieza / Referencia</th>
+                  <th className="py-6 px-8 text-left text-[10px] font-black uppercase tracking-[0.3em]">Categoría</th>
+                  <th className="py-6 px-8 text-right text-[10px] font-black uppercase tracking-[0.3em]">Valor ARS</th>
+                  <th className="py-6 px-8 text-center text-[10px] font-black uppercase tracking-[0.3em]">Disponibilidad</th>
+                  <th className="py-6 px-8 text-center text-[10px] font-black uppercase tracking-[0.3em]">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#151515]">
+                {products.map((p) => (
+                  <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
+                    <td className="py-6 px-8">
+                      <div className="font-black text-white italic text-lg tracking-tight uppercase group-hover:text-[#4a0e2e] transition-colors">
+                        {p.nombre}
+                      </div>
+                      <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest block mt-1">
+                        Ref: {p.marca || 'Molina Eyewear'}
+                      </span>
+                    </td>
+                    <td className="py-6 px-8">
+                      <span className="px-3 py-1 bg-[#1a1a1a] rounded-full text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                        {p.category?.name || 'General'}
+                      </span>
+                    </td>
+                    <td className="py-6 px-8 text-right">
+                      <span className="text-xl font-black text-white tracking-tighter italic">
+                        ${p.precio?.toLocaleString('es-AR')}
+                      </span>
+                    </td>
+                    <td className="py-6 px-8">
+                      <div className="flex justify-center items-center gap-4">
+                        <button 
+                          onClick={() => handleUpdateStock(p.id, -1)} 
+                          className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#111] border border-[#222] hover:border-red-900/50 hover:text-red-500 transition-all font-bold"
+                        >
+                          -
+                        </button>
+                        <span className={`text-sm font-black w-8 text-center ${p.stock <= 3 ? 'text-[#801a4d]' : 'text-gray-300'}`}>
+                          {p.stock}
+                        </span>
+                        <button 
+                          onClick={() => handleUpdateStock(p.id, 1)} 
+                          className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#111] border border-[#222] hover:border-emerald-900/50 hover:text-emerald-500 transition-all font-bold"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </td>
+                    <td className="py-6 px-8 text-center">
+                      <button 
+                        onClick={() => handleDelete(p.id)} 
+                        className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-red-500 transition-colors"
+                      >
+                        Remover
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {products.length === 0 && (
+            <div className="py-20 text-center text-gray-600 italic">
+              No hay piezas registradas en la colección actual.
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
-        <table className="min-w-full leading-normal">
-          <thead className="bg-slate-800 text-white">
-            <tr>
-              <th className="py-4 px-6 text-left">Modelo / Marca</th>
-              <th className="py-4 px-6 text-left">Categoría</th>
-              <th className="py-4 px-6 text-right">Precio</th>
-              <th className="py-4 px-6 text-center">Stock</th>
-              <th className="py-4 px-6 text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => (
-              <tr key={p.id} className="border-b hover:bg-gray-50">
-                <td className="py-4 px-6 font-bold">{p.nombre} <span className="block text-xs text-gray-400 font-normal">{p.marca}</span></td>
-                <td className="py-4 px-6 text-sm">{p.category?.name}</td>
-                <td className="py-4 px-6 text-right font-bold text-green-600">${p.precio}</td>
-                <td className="py-4 px-6 text-center">
-                  <div className="flex justify-center gap-2">
-                    <button onClick={() => handleUpdateStock(p.id, -1)} className="px-2 bg-red-100 rounded">-</button>
-                    <span className="w-4">{p.stock}</span>
-                    <button onClick={() => handleUpdateStock(p.id, 1)} className="px-2 bg-green-100 rounded">+</button>
-                  </div>
-                </td>
-                <td className="py-4 px-6 text-center">
-                  <button onClick={() => handleDelete(p.id)} className="text-red-400 hover:text-red-600 underline">Eliminar</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* COMPONENTE HIJO MODAL */}
       <NuevoProducto 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
