@@ -7,23 +7,22 @@ import AdminPanel from './pages/AdminPanel.jsx';
 import Success from './pages/Success';
 import Failure from './pages/Failure';
 import Register from './pages/Register.jsx';
-import ProductDetail from './components/ProductDetail.jsx';
+import ProductDetail from './pages/ProductDetail.jsx'; // Asegúrate que esté en pages si es una vista completa
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      {/* Cambiamos el fondo a uno más limpio para que resalte el contenido */}
+      <div className="min-h-screen bg-[#FDFDFD] font-sans">
         <Navbar />
-        <div className="container mx-auto p-4">
+        {/* Sacamos el 'p-4' del container para que el Hero del Home sea Full Width */}
+        <div className="w-full">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<AdminPanel />} /> 
-            
-            {/* 2. AGREGÁ ESTA RUTA PARA EL DETALLE */}
             <Route path="/product/:id" element={<ProductDetail />} />
-            
             <Route path="/success" element={<Success />} />
             <Route path="/failure" element={<Failure />} />
           </Routes>
