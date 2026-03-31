@@ -43,7 +43,7 @@ const ProductDetail = () => {
         window.location.href = response.data.url;
       } else {
         // 2. Si es TARJETA, inicializamos el Checkout Pro In-Context
-        const mp = new window.MercadoPago('TU_PUBLIC_KEY_AQUI', { // <--- PONÉ TU PUBLIC KEY
+        const mp = new window.MercadoPago('APP_USR-10780816-0593-4430-b7b9-fbec8b6ad066', { // <--- PONÉ TU PUBLIC KEY
           locale: 'es-AR'
         });
 
@@ -122,7 +122,7 @@ const ProductDetail = () => {
                 onClick={() => handlePayment('card')}
                 className="bg-white border-2 border-black text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all shadow-md active:scale-95"
               >
-                Tarjeta de Crédito
+                Tarjeta de Débito o Crédito
               </button>
 
               <button 
