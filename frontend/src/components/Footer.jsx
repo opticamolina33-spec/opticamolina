@@ -21,10 +21,43 @@ const Footer = () => {
           
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#4a0e2e] to-transparent mb-8"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-2xl text-[11px] font-medium tracking-widest uppercase mb-12">
+          {/* Links */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-2xl text-[11px] font-medium tracking-widest uppercase mb-8">
             <span className="hover:text-white transition-colors cursor-pointer">Colecciones</span>
-            <span className="hover:text-white transition-colors cursor-pointer">Ubicación Córdoba</span>
-            <span className="hover:text-white transition-colors cursor-pointer">Contacto Directo</span>
+            
+            <a 
+              href="https://maps.app.goo.gl/witpKBazKWnxEsLz9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Ubicación Córdoba
+            </a>
+            
+            <a 
+              href="https://wa.me/543516797785" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Contacto Directo
+            </a>
+          </div>
+
+          {/* Info adicional */}
+          <div className="text-[10px] text-gray-400 tracking-wider uppercase space-y-2 mb-10">
+            <p>
+              📍 <a 
+                href="https://maps.app.goo.gl/witpKBazKWnxEsLz9" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                Ver ubicación en mapa
+              </a>
+            </p>
+            <p>📞 351 679 7785</p>
+            <p>🕒 Lunes a viernes: 9 a 13 hs — 16 a 20 hs</p>
           </div>
           
           <p className="text-[9px] text-gray-600 tracking-[0.3em] uppercase">
