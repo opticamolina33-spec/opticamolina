@@ -18,20 +18,20 @@ const CategoryPage = () => {
 
   const fetchCategoryData = async () => {
     try {
-      const [productsRes, categoryRes] = await Promise.all([
-        api.get(`/public/products?categoryId=${id}`), // 🔥 ideal
+        const [productsRes, categoryRes] = await Promise.all([
+        api.get(`/public/products/category/${id}`), // <-- endpoint correcto
         api.get(`/public/categories/${id}`)
-      ]);
+        ]);
 
-      setProducts(productsRes.data);
-      setCategory(categoryRes.data);
+        setProducts(productsRes.data);
+        setCategory(categoryRes.data);
 
     } catch (error) {
-      console.error("Error cargando categoría:", error);
+        console.error("Error cargando categoría:", error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+    };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
