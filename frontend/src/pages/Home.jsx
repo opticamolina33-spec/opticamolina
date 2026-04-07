@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import ProductSkeleton from '../components/ProductSkeleton';
@@ -30,13 +31,13 @@ const Home = () => {
     }
   };
 
-  // 🔹 Agrupar productos por categoría (dinámico desde backend)
+  // 🔹 Agrupar productos por categoría
   const groupedProducts = categories.map((cat) => ({
-  ...cat,
-  items: products.filter(
-    (p) => p.category?.id === cat.id
-  )
-}));
+    ...cat,
+    items: products.filter(
+      (p) => p.category?.id === cat.id
+    )
+  }));
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
@@ -123,11 +124,13 @@ const Home = () => {
               category.items.length > 0 && (
                 <section key={category.id}>
                   
-                  {/* TÍTULO */}
+                  {/* TÍTULO CLICKABLE */}
                   <div className="mb-6 flex items-center justify-between">
-                    <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-wide">
-                      {category.name}
-                    </h3>
+                    <Link to={`/categoria/${category.id}`}>
+                      <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-wide hover:opacity-70 transition cursor-pointer">
+                        {category.name}
+                      </h3>
+                    </Link>
                   </div>
 
                   {/* CARRUSEL */}
