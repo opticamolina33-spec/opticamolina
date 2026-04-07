@@ -35,7 +35,7 @@ function App() {
               <Route path="/success" element={<Success />} />
               <Route path="/failure" element={<Failure />} />
               <Route path="/pending" element={<Pending />} />
-              <Route path="/category/:id" element={<CategoryPage />} />
+              <Route path="/categoria/:id" element={<CategoryPage />} />
             </Routes>
           </main>
           <WhatsAppButton />
