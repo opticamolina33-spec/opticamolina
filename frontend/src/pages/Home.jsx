@@ -15,21 +15,21 @@ const Home = () => {
   }, []);
 
   const fetchData = async () => {
-    try {
-      const [productsRes, categoriesRes] = await Promise.all([
-        api.get('/public/products'),
-        api.get('/public/categories')
-      ]);
+  try {
+    const [productsRes, categoryRes] = await Promise.all([
+      api.get(`/public/products/category/${id}`), // <-- endpoint correcto
+      api.get(`/public/categories/${id}`)
+    ]);
 
-      setProducts(productsRes.data);
-      setCategories(categoriesRes.data);
+    setProducts(productsRes.data);
+    setCategory(categoryRes.data);
 
-    } catch (error) {
-      console.error("Error al cargar datos:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (error) {
+    console.error("Error cargando categoría:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // 🔹 Agrupar productos por categoría
   const groupedProducts = categories.map((cat) => ({
