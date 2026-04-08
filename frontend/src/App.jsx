@@ -15,7 +15,7 @@ import CategoryPage from './pages/CategoryPage';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#050505] font-sans text-gray-200 selection:bg-[#4a0e2e] selection:text-white">
+      <div className="min-h-screen bg-white font-sans text-gray-200 selection:bg-[#4a0e2e] selection:text-white">
         
         {/* Gradiente de fondo fijo para dar esa sensación del logo en toda la app */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
