@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login.jsx';
 import Home from './pages/Home.jsx'; 
 import AdminPanel from './pages/AdminPanel.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx'; // <--- NUEVO
 import Success from './pages/Success';
 import Failure from './pages/Failure';
 import Register from './pages/Register.jsx';
@@ -30,7 +31,11 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              
+              {/* Paneles de Administración */}
               <Route path="/admin" element={<AdminPanel />} /> 
+              <Route path="/admin/ventas" element={<AdminDashboard />} /> 
+
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/success" element={<Success />} />
               <Route path="/failure" element={<Failure />} />
