@@ -13,7 +13,7 @@ const AdminDashboard = () => {
   const fetchVentas = async () => {
     try {
       // Llamamos al endpoint que creamos en VentaController
-      const res = await api.get('/api/admin/ventas/historial');
+      const res = await api.get('/admin/ventas/historial');
       setVentas(res.data);
       setLoading(false);
     } catch (err) {
