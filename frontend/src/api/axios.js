@@ -4,7 +4,7 @@ const api = axios.create({
     // Si estás en localhost usa el puerto 8080, sino usa la URL de Railway
     baseURL: window.location.hostname === 'localhost' 
         ? 'http://localhost:8080/api' 
-        : 'https://opticamolina-production.up.railway.app/api'
+        : 'https://opticamolina-production-a367.up.railway.app/api'
 });
 
 // Interceptor para el token (Fundamental para el Admin de la Óptica)
