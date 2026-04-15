@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
@@ -44,12 +45,30 @@ public class SecurityConfig {
                 "https://opticamolinacba.vercel.app"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control", "Accept", "Origin"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization", "Content-Type", "Cache-Control", "Accept", "Origin", "X-Requested-With"
+        ));
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"
+        ));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    /**
+     * Registers a CorsFilter as a top-level servlet filter so that CORS headers
+     * are written — and OPTIONS preflight requests are fully handled — before
+     * Spring Security's filter chain ever runs. This guarantees that the browser
+     * receives the correct Access-Control-Allow-Origin header even on requests
+     * that would otherwise be rejected by authentication checks.
+     */
+    @Bean
+    public CorsFilter corsFilter() {
+        return new CorsFilter(corsConfigurationSource());
     }
 
     @Bean
