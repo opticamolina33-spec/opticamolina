@@ -8,6 +8,9 @@ import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.client.payment.PaymentClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import opticamolina.demo.model.User;
+import opticamolina.demo.repository.UserRepository;
+
 
 import java.util.Map;
 
@@ -22,9 +25,9 @@ public class PaymentController {
     @Autowired
     private VentaRepository ventaRepository;
 
-    // -------------------------------------------------------------------
-    // 1. GENERA EL LINK PARA BILLETERA VIRTUAL (Checkout Pro)
-    // -------------------------------------------------------------------
+    @Autowired
+    private opticamolina.demo.repository.UserRepository userRepository;
+
     @PostMapping("/create")
     public Map<String, String> create(@RequestBody Map<String, Object> data) {
         try {
@@ -61,36 +64,36 @@ public class PaymentController {
         }
     }
 
-    // -------------------------------------------------------------------
-    // 3. CONFIRMA Y GUARDA PAGO DE BILLETERA (Al volver a /success)
-    // -------------------------------------------------------------------
     @GetMapping("/confirm-order")
     public Map<String, Object> confirmOrder(@RequestParam("payment_id") String paymentId) {
         try {
-            // Usamos el SDK para traer los datos reales del pago desde MP
             PaymentClient client = new PaymentClient();
             Payment payment = client.get(Long.parseLong(paymentId));
 
             if (payment != null) {
-                // Verificamos si ya existe en nuestra DB para no duplicar
-                // (Opcional, pero recomendado)
+                String email = payment.getPayer().getEmail();
+                
+                // Buscamos si el usuario existe en nuestra DB para sacar su dirección
+                User usuario = userRepository.findByEmail(email).orElse(null);
+                String nombre = (usuario != null) ? usuario.getName() : "Cliente Externo";
+                String direccion = (usuario != null && usuario.getAddress() != null) ? usuario.getAddress() : "Retiro en Local / No especificada";
 
                 Venta nuevaVenta = new Venta(
                         payment.getId().toString(),
                         payment.getDescription(),
                         payment.getTransactionAmount().doubleValue(),
-                        payment.getStatus()
+                        payment.getStatus(),
+                        email,
+                        nombre,
+                        direccion,
+                        payment.getPaymentMethodId() // Ej: 'visa', 'account_money'
                 );
 
                 ventaRepository.save(nuevaVenta);
 
-                return Map.of(
-                        "status", "saved",
-                        "payment_status", payment.getStatus()
-                );
+                return Map.of("status", "saved", "payment_status", payment.getStatus());
             }
-            return Map.of("status", "error", "message", "Pago no encontrado en Mercado Pago");
-
+            return Map.of("status", "error", "message", "Pago no encontrado");
         } catch (Exception e) {
             return Map.of("status", "error", "message", e.getMessage());
         }
