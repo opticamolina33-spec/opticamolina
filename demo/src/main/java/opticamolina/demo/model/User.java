@@ -26,7 +26,7 @@ public class User {
     @Column(nullable = true)
     private String address;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDate birthDate;
 
     @ManyToMany(fetch = FetchType.EAGER)
