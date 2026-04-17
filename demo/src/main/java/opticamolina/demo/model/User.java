@@ -1,23 +1,33 @@
-// Archivo: src/main/java/opticamolina/demo/model/User.java
 package opticamolina.demo.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @Data
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String name;
 
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = true)
+    private String address;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

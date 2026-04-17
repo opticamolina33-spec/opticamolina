@@ -34,7 +34,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> data) {
-        String result = authService.registerUser(data.get("email"), data.get("password"));
+        String result = authService.registerUser(
+                data.get("name"),
+                data.get("email"),
+                data.get("password"),
+                data.get("address"),
+                data.get("birthDate")
+        );
+
         if (result.startsWith("Error")) {
             return ResponseEntity.badRequest().body(result);
         }

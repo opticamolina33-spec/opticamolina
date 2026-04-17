@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 const Register = () => {
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,7 +21,13 @@ const Register = () => {
       return;
     }
     try {
-      await api.post('/auth/register', { email, password });
+      await api.post('/auth/register', { 
+        name,
+        email,
+        password,
+        address,
+        birthDate
+      });
       alert("¡Cuenta de Óptica Molina creada con éxito!");
       navigate('/login');
     } catch (err) {
@@ -45,6 +54,43 @@ const Register = () => {
         )}
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5">
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2 ml-1">
+              Nombre completo
+            </label>
+            <input 
+              type="text"
+              className="w-full px-5 py-4 bg-gray-50 rounded-2xl"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2 ml-1">
+              Dirección (opcional)
+            </label>
+            <input 
+              type="text"
+              className="w-full px-5 py-4 bg-gray-50 rounded-2xl"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2 ml-1">
+              Fecha de nacimiento
+            </label>
+            <input 
+              type="date"
+              className="w-full px-5 py-4 bg-gray-50 rounded-2xl"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              required
+            />
+          </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2 ml-1">Tu mejor Email</label>
             <input 

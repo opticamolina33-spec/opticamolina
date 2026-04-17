@@ -37,14 +37,42 @@ public class AuthService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public String registerUser(String email, String password) {
+    public String registerUser(String name, String email, String password, String address, String birthDate) {
+
         if (userRepository.existsByEmail(email)) {
             return "Error: El email ya está registrado.";
         }
+
+        // Validaciones básicas
+        if (name == null || name.isBlank()) {
+            return "Error: El nombre es obligatorio.";
+        }
+
+        if (password == null || password.length() < 6) {
+            return "Error: La contraseña debe tener al menos 6 caracteres.";
+        }
+
+        if (birthDate == null || birthDate.isBlank()) {
+            return "Error: La fecha de nacimiento es obligatoria.";
+        }
+
         User user = new User();
+
+        user.setName(name);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
 
+        // Dirección opcional
+        user.setAddress(address != null && !address.isBlank() ? address : null);
+
+        // Parseo de fecha seguro
+        try {
+            user.setBirthDate(java.time.LocalDate.parse(birthDate)); // formato yyyy-MM-dd
+        } catch (Exception e) {
+            return "Error: Formato de fecha inválido. Usar yyyy-MM-dd.";
+        }
+
+        // Rol por defecto
         Role userRole = roleRepository.findByName("ROLE_CLIENTE")
                 .orElseThrow(() -> new RuntimeException("Error: El rol no existe."));
 
@@ -53,6 +81,7 @@ public class AuthService {
         user.setRoles(roles);
 
         userRepository.save(user);
+
         return "Usuario registrado con éxito.";
     }
 
