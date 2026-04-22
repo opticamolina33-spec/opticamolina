@@ -6,8 +6,9 @@ import NuevoProducto from '../components/NuevoProducto';
 
 const AdminPanel = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]); // Estado para las categorías disponibles
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false); // Estado para el botón de ML
+  const [isSyncing, setIsSyncing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,6 +17,7 @@ const AdminPanel = () => {
       navigate('/');
     } else {
       fetchData();
+      fetchCategories();
     }
   }, [navigate]);
 
@@ -23,20 +25,41 @@ const AdminPanel = () => {
     try {
       const res = await api.get('/public/products');
       setProducts(res.data);
-    } catch (error) { console.error("Error:", error); }
+    } catch (error) { console.error("Error trayendo productos:", error); }
   };
 
-  // --- FUNCIÓN DE SINCRONIZACIÓN ---
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/public/categories');
+      setCategories(res.data);
+    } catch (error) { console.error("Error trayendo categorías:", error); }
+  };
+
   const handleSyncML = async () => {
     setIsSyncing(true);
     try {
       const res = await api.post('/admin/mercadolibre/sync');
-      alert(res.data.message); // Muestra cuántos se agregaron/actualizaron
+      alert(res.data.message);
       fetchData();
     } catch (err) {
       alert("Error al sincronizar: " + (err.response?.data?.error || err.message));
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  // --- NUEVA FUNCIÓN: CAMBIAR CATEGORÍA RÁPIDO ---
+  const handleCategoryChange = async (product, newCategoryId) => {
+    try {
+      const updatedProduct = {
+        ...product,
+        category: { id: parseInt(newCategoryId) }
+      };
+      await api.put(`/admin/products/${product.id}`, updatedProduct);
+      fetchData(); // Recargamos para ver el cambio reflejado
+    } catch (err) {
+      alert("Error al mover el producto de categoría");
+      console.error(err);
     }
   };
 
@@ -72,7 +95,6 @@ const AdminPanel = () => {
           </div>
           
           <div className="flex gap-4">
-            {/* BOTÓN MERCADO LIBRE */}
             <button
               onClick={handleSyncML}
               disabled={isSyncing}
@@ -99,7 +121,7 @@ const AdminPanel = () => {
                   <th className="py-6 px-8 text-left text-[10px] font-black uppercase tracking-[0.3em]">Pieza / Referencia</th>
                   <th className="py-6 px-8 text-left text-[10px] font-black uppercase tracking-[0.3em]">Categoría</th>
                   <th className="py-6 px-8 text-right text-[10px] font-black uppercase tracking-[0.3em]">Valor ARS</th>
-                  <th className="py-6 px-8 text-center text-[10px] font-black uppercase tracking-[0.3em]">Disponibilidad</th>
+                  <th className="py-6 px-8 text-center text-[10px] font-black uppercase tracking-[0.3em]">Stock</th>
                   <th className="py-6 px-8 text-center text-[10px] font-black uppercase tracking-[0.3em]">Acciones</th>
                 </tr>
               </thead>
@@ -107,16 +129,15 @@ const AdminPanel = () => {
                 {products.map((p) => (
                   <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="py-6 px-8">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4">
                         {p.imagenUrl && (
-                          <img src={p.imagenUrl} alt={p.nombre} className="w-12 h-12 object-cover rounded-lg border border-[#222]" />
+                          <img src={p.imagenUrl} alt={p.nombre} className="w-14 h-14 object-cover rounded-xl border border-[#1a1a1a]" />
                         )}
                         <div>
-                          <div className="font-black text-white italic text-lg tracking-tight uppercase group-hover:text-[#4a0e2e] transition-colors flex items-center gap-2">
+                          <div className="font-black text-white italic text-lg tracking-tight uppercase group-hover:text-[#801a4d] transition-colors flex items-center gap-2">
                             {p.nombre}
-                            {/* Etiqueta si vino de ML */}
                             {p.idMercadoLibre && (
-                              <span className="bg-[#ffe600] text-[#2d3277] text-[8px] px-2 py-0.5 rounded-full not-italic tracking-widest">ML</span>
+                              <span className="bg-[#ffe600] text-[#2d3277] text-[8px] px-2 py-0.5 rounded-full not-italic tracking-widest font-black">ML</span>
                             )}
                           </div>
                           <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest block mt-1">
@@ -125,25 +146,38 @@ const AdminPanel = () => {
                         </div>
                       </div>
                     </td>
+
+                    {/* SELECTOR DE CATEGORÍA DINÁMICO */}
                     <td className="py-6 px-8">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${p.category?.name === 'Importado de ML' ? 'bg-yellow-900/30 text-yellow-500' : 'bg-[#1a1a1a] text-gray-400'}`}>
-                        {p.category?.name || 'General'}
-                      </span>
+                      <select
+                        value={p.category?.id || ""}
+                        onChange={(e) => handleCategoryChange(p, e.target.value)}
+                        className={`bg-[#111] border border-[#222] text-[10px] font-bold uppercase tracking-tighter rounded-lg px-3 py-2 outline-none focus:border-[#801a4d] transition-all cursor-pointer ${p.category?.name === 'Importado de ML' ? 'text-yellow-500 border-yellow-900/50' : 'text-gray-400'}`}
+                      >
+                        <option value="" disabled>Seleccionar...</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
                     </td>
+
                     <td className="py-6 px-8 text-right">
                       <span className="text-xl font-black text-white tracking-tighter italic">
                         ${p.precio?.toLocaleString('es-AR')}
                       </span>
                     </td>
+
                     <td className="py-6 px-8">
-                      <div className="flex justify-center items-center gap-4">
+                      <div className="flex justify-center items-center gap-3">
                         <button 
                           onClick={() => handleUpdateStock(p.id, -1)} 
                           className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#111] border border-[#222] hover:border-red-900/50 hover:text-red-500 transition-all font-bold"
                         >
                           -
                         </button>
-                        <span className={`text-sm font-black w-8 text-center ${p.stock <= 3 ? 'text-[#801a4d]' : 'text-gray-300'}`}>
+                        <span className={`text-sm font-black w-6 text-center ${p.stock <= 2 ? 'text-[#801a4d]' : 'text-gray-300'}`}>
                           {p.stock}
                         </span>
                         <button 
@@ -154,12 +188,13 @@ const AdminPanel = () => {
                         </button>
                       </div>
                     </td>
+
                     <td className="py-6 px-8 text-center">
                       <button 
                         onClick={() => handleDelete(p.id)} 
-                        className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-red-500 transition-colors"
+                        className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 hover:text-red-500 transition-colors"
                       >
-                        Remover
+                        Eliminar
                       </button>
                     </td>
                   </tr>
@@ -169,8 +204,8 @@ const AdminPanel = () => {
           </div>
           
           {products.length === 0 && (
-            <div className="py-20 text-center text-gray-600 italic">
-              No hay piezas registradas en la colección actual.
+            <div className="py-20 text-center text-gray-600 italic tracking-widest uppercase text-[10px]">
+              La colección está vacía actualmente.
             </div>
           )}
         </div>
