@@ -9,6 +9,8 @@ import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
 import opticamolina.demo.model.Venta;
 import opticamolina.demo.repository.VentaRepository;
+import opticamolina.demo.repository.UserRepository;
+import opticamolina.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,10 @@ public class PaymentService {
     private String accessToken;
 
     @Autowired
-    private VentaRepository ventaRepository; // Inyectamos el repo para guardar las ventas
+    private VentaRepository ventaRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // -------------------------------------------------------------------
     // MÉTODO 1: Para Billetera Virtual (Checkout Pro)
@@ -81,6 +86,11 @@ public class PaymentService {
             Map<String, Object> payerMap = (Map<String, Object>) paymentData.get("payer");
             String email = payerMap.get("email").toString();
 
+            // Intentamos obtener datos del usuario de nuestra DB para la dirección
+            User usuario = userRepository.findByEmail(email).orElse(null);
+            String nombre = (usuario != null) ? usuario.getName() : "Cliente Checkout API";
+            String direccion = (usuario != null && usuario.getAddress() != null) ? usuario.getAddress() : "Dirección no proporcionada";
+
             // Armamos la solicitud de cobro directo
             PaymentCreateRequest paymentCreateRequest = PaymentCreateRequest.builder()
                     .transactionAmount(new BigDecimal(paymentData.get("transaction_amount").toString()))
@@ -96,17 +106,21 @@ public class PaymentService {
             PaymentClient client = new PaymentClient();
             Payment payment = client.create(paymentCreateRequest);
 
-            // --- NUEVO: GUARDAR EN LA BASE DE DATOS ---
+            // --- GUARDAR EN LA BASE DE DATOS CON EL NUEVO CONSTRUCTOR ---
             if (payment != null && payment.getId() != null) {
                 Venta nuevaVenta = new Venta(
-                        payment.getId().toString(),
-                        payment.getDescription(),
-                        payment.getTransactionAmount().doubleValue(),
-                        payment.getStatus()
+                        payment.getId().toString(),                  // paymentIdMp
+                        payment.getDescription(),                     // producto
+                        payment.getTransactionAmount().doubleValue(), // monto
+                        payment.getStatus(),                          // estado
+                        email,                                        // emailCliente
+                        nombre,                                       // nombreCliente
+                        direccion,                                    // direccionEntrega
+                        payment.getPaymentMethodId()                  // metodoPago
                 );
 
                 ventaRepository.save(nuevaVenta);
-                System.out.println("Venta guardada en DB: " + payment.getId());
+                System.out.println("Venta guardada exitosamente en DB: " + payment.getId());
             }
 
             return payment;
