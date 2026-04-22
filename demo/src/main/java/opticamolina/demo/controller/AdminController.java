@@ -48,4 +48,19 @@ public class AdminController {
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
+
+    // Dentro de src/main/java/opticamolina/demo/controller/AdminController.java
+
+    @Autowired
+    private opticamolina.demo.service.MercadoLibreSyncService mlSyncService;
+
+    @PostMapping("/mercadolibre/sync")
+    public ResponseEntity<Map<String, String>> syncMercadoLibre() {
+        try {
+            String result = mlSyncService.syncProductsFromML();
+            return ResponseEntity.ok(Map.of("message", result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

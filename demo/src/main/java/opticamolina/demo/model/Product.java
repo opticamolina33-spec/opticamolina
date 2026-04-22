@@ -1,3 +1,4 @@
+// Archivo: src/main/java/opticamolina/demo/model/Product.java
 package opticamolina.demo.model;
 
 import jakarta.persistence.*;
@@ -12,9 +13,14 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // --- NUEVO CAMPO PARA ML ---
+    @Column(unique = true)
+    private String idMercadoLibre;
+
     // Datos principales
     private String nombre;
     private String marca;
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
     private Double precio;
     private Integer stock;

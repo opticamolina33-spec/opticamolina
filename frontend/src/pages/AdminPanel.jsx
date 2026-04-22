@@ -7,6 +7,7 @@ import NuevoProducto from '../components/NuevoProducto';
 const AdminPanel = () => {
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false); // Estado para el botón de ML
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +24,20 @@ const AdminPanel = () => {
       const res = await api.get('/public/products');
       setProducts(res.data);
     } catch (error) { console.error("Error:", error); }
+  };
+
+  // --- FUNCIÓN DE SINCRONIZACIÓN ---
+  const handleSyncML = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await api.post('/admin/mercadolibre/sync');
+      alert(res.data.message); // Muestra cuántos se agregaron/actualizaron
+      fetchData();
+    } catch (err) {
+      alert("Error al sincronizar: " + (err.response?.data?.error || err.message));
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const handleUpdateStock = async (id, quantity) => {
@@ -56,12 +71,23 @@ const AdminPanel = () => {
             </p>
           </div>
           
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="group relative overflow-hidden bg-white text-black font-black py-4 px-10 rounded-2xl shadow-2xl hover:bg-[#4a0e2e] hover:text-white transition-all duration-500 uppercase tracking-[0.2em] text-xs transform active:scale-95"
-          >
-            <span className="relative z-10">+ Cargar Nuevo Modelo</span>
-          </button>
+          <div className="flex gap-4">
+            {/* BOTÓN MERCADO LIBRE */}
+            <button
+              onClick={handleSyncML}
+              disabled={isSyncing}
+              className="group relative overflow-hidden bg-[#ffe600] text-[#2d3277] font-black py-4 px-8 rounded-2xl shadow-lg hover:bg-[#ffeb3b] transition-all duration-500 uppercase tracking-[0.2em] text-xs transform active:scale-95 disabled:opacity-50"
+            >
+              <span className="relative z-10">{isSyncing ? 'Sincronizando...' : '↻ Traer de ML'}</span>
+            </button>
+
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="group relative overflow-hidden bg-white text-black font-black py-4 px-10 rounded-2xl shadow-2xl hover:bg-[#4a0e2e] hover:text-white transition-all duration-500 uppercase tracking-[0.2em] text-xs transform active:scale-95"
+            >
+              <span className="relative z-10">+ Cargar Nuevo Modelo</span>
+            </button>
+          </div>
         </div>
 
         {/* Tabla Minimalista Dark */}
@@ -81,15 +107,26 @@ const AdminPanel = () => {
                 {products.map((p) => (
                   <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="py-6 px-8">
-                      <div className="font-black text-white italic text-lg tracking-tight uppercase group-hover:text-[#4a0e2e] transition-colors">
-                        {p.nombre}
+                      <div className="flex items-center gap-3">
+                        {p.imagenUrl && (
+                          <img src={p.imagenUrl} alt={p.nombre} className="w-12 h-12 object-cover rounded-lg border border-[#222]" />
+                        )}
+                        <div>
+                          <div className="font-black text-white italic text-lg tracking-tight uppercase group-hover:text-[#4a0e2e] transition-colors flex items-center gap-2">
+                            {p.nombre}
+                            {/* Etiqueta si vino de ML */}
+                            {p.idMercadoLibre && (
+                              <span className="bg-[#ffe600] text-[#2d3277] text-[8px] px-2 py-0.5 rounded-full not-italic tracking-widest">ML</span>
+                            )}
+                          </div>
+                          <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest block mt-1">
+                            Ref: {p.marca || 'Molina Eyewear'}
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest block mt-1">
-                        Ref: {p.marca || 'Molina Eyewear'}
-                      </span>
                     </td>
                     <td className="py-6 px-8">
-                      <span className="px-3 py-1 bg-[#1a1a1a] rounded-full text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${p.category?.name === 'Importado de ML' ? 'bg-yellow-900/30 text-yellow-500' : 'bg-[#1a1a1a] text-gray-400'}`}>
                         {p.category?.name || 'General'}
                       </span>
                     </td>
