@@ -38,7 +38,7 @@ const AdminPanel = () => {
   const handleSyncML = async () => {
     setIsSyncing(true);
     try {
-      const res = await api.post('/admin/mercadolibre/sync'), {};
+      const res = await api.post('/admin/mercadolibre/sync', {}); // ✅ CORRECTO
       alert(res.data.message);
       fetchData();
     } catch (err) {
