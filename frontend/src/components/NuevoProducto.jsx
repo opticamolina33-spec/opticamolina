@@ -8,7 +8,7 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
 
   const [newProduct, setNewProduct] = useState({
     nombre: '', marca: '', descripcion: '', precio: '', stock: '',
-    color: '', tamanio: '', material: '', forma: '', imagenUrl: '',
+    color: '', tamanio: '', material: '', forma: '', imagenUrl: [],
     tieneDescuento: false, porcentajeDescuento: 0, categoryId: ''
   });
 
@@ -88,13 +88,14 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess }) => {
             <div>
               <label className={labelClass}>Enlace de Imagen</label>
               <input 
-                type="text" 
-                placeholder="https://imgur.com/..." 
-                className={inputClass} 
-                value={newProduct.imagenUrl} 
-                onChange={(e) => setNewProduct({...newProduct, imagenUrl: e.target.value})} 
-                required 
-              />
+                  type="text"
+                  placeholder="https://img1.com, https://img2.com"
+                  className={inputClass}
+                  onChange={(e) => setNewProduct({
+                    ...newProduct,
+                    imagenes: e.target.value.split(',') // separa por coma
+                  })}
+                />
             </div>
             <div>
               <label className={labelClass}>Categoría Curada</label>

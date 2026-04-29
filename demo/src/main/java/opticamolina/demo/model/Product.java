@@ -4,6 +4,8 @@ package opticamolina.demo.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "products")
 @Data
@@ -32,7 +34,8 @@ public class Product {
     private String forma;
 
     // Imagen
-    private String imagenUrl;
+    @ElementCollection
+    private List<String> imagenUrl;
 
     // Descuento
     private Boolean tieneDescuento;
