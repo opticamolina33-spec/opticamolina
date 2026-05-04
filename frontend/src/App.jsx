@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login.jsx';
 import Home from './pages/Home.jsx'; 
 import AdminPanel from './pages/AdminPanel.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx'; // <--- NUEVO
 import Success from './pages/Success';
 import Failure from './pages/Failure';
 import Register from './pages/Register.jsx';
@@ -11,6 +12,8 @@ import ProductDetail from './components/ProductDetail.jsx';
 import WhatsAppButton from './components/WhatsappButton.jsx';
 import Pending from './pages/Pending.jsx';
 import CategoryPage from './pages/CategoryPage';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 
 function App() {
   return (
@@ -30,7 +33,13 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              
+              {/* Paneles de Administración */}
               <Route path="/admin" element={<AdminPanel />} /> 
+              <Route path="/admin/ventas" element={<AdminDashboard />} /> 
+
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/success" element={<Success />} />
               <Route path="/failure" element={<Failure />} />

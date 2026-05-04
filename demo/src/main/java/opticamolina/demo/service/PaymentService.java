@@ -1,4 +1,3 @@
-// Archivo: src/main/java/opticamolina/demo/service/PaymentService.java
 package opticamolina.demo.service;
 
 import com.mercadopago.MercadoPagoConfig;
@@ -8,6 +7,11 @@ import com.mercadopago.client.payment.PaymentPayerRequest;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
+import opticamolina.demo.model.Venta;
+import opticamolina.demo.repository.VentaRepository;
+import opticamolina.demo.repository.UserRepository;
+import opticamolina.demo.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +26,14 @@ public class PaymentService {
     @Value("${mercadopago.access.token}")
     private String accessToken;
 
+    @Autowired
+    private VentaRepository ventaRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     // -------------------------------------------------------------------
-    // MÉTODO 1: Para Billetera Virtual (Te manda a la app de Mercado Pago)
+    // MÉTODO 1: Para Billetera Virtual (Checkout Pro)
     // -------------------------------------------------------------------
     public Map<String, String> createPreference(String title, Double price, Integer quantity) {
         try {
@@ -66,16 +76,20 @@ public class PaymentService {
     }
 
     // -------------------------------------------------------------------
-    // MÉTODO 2: Para Tarjeta en la página (Card Payment Brick)
+    // MÉTODO 2: Para Tarjeta Directa (Card Payment Brick) + GUARDADO EN DB
     // -------------------------------------------------------------------
     public Payment processCardPayment(Map<String, Object> paymentData) {
         try {
             MercadoPagoConfig.setAccessToken(accessToken);
 
-            // Extraemos el objeto "payer" que manda el Brick de React
             @SuppressWarnings("unchecked")
             Map<String, Object> payerMap = (Map<String, Object>) paymentData.get("payer");
             String email = payerMap.get("email").toString();
+
+            // Intentamos obtener datos del usuario de nuestra DB para la dirección
+            User usuario = userRepository.findByEmail(email).orElse(null);
+            String nombre = (usuario != null) ? usuario.getName() : "Cliente Checkout API";
+            String direccion = (usuario != null && usuario.getAddress() != null) ? usuario.getAddress() : "Dirección no proporcionada";
 
             // Armamos la solicitud de cobro directo
             PaymentCreateRequest paymentCreateRequest = PaymentCreateRequest.builder()
@@ -90,7 +104,26 @@ public class PaymentService {
                     .build();
 
             PaymentClient client = new PaymentClient();
-            return client.create(paymentCreateRequest);
+            Payment payment = client.create(paymentCreateRequest);
+
+            // --- GUARDAR EN LA BASE DE DATOS CON EL NUEVO CONSTRUCTOR ---
+            if (payment != null && payment.getId() != null) {
+                Venta nuevaVenta = new Venta(
+                        payment.getId().toString(),                  // paymentIdMp
+                        payment.getDescription(),                     // producto
+                        payment.getTransactionAmount().doubleValue(), // monto
+                        payment.getStatus(),                          // estado
+                        email,                                        // emailCliente
+                        nombre,                                       // nombreCliente
+                        direccion,                                    // direccionEntrega
+                        payment.getPaymentMethodId()                  // metodoPago
+                );
+
+                ventaRepository.save(nuevaVenta);
+                System.out.println("Venta guardada exitosamente en DB: " + payment.getId());
+            }
+
+            return payment;
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -29,15 +29,22 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <div className="flex items-center space-x-8">
+        <div className="flex items-center space-x-6 md:space-x-8">
           <Link to="/" className="text-sm font-medium hover:text-[#801a4d] transition-colors tracking-widest uppercase">
             Catálogo
           </Link>
           
+          {/* Opciones exclusivas para Admin */}
           {isAdmin && (
-            <Link to="/admin" className="text-sm font-bold text-amber-500 hover:text-amber-400 transition-colors uppercase">
-              Admin
-            </Link>
+            <>
+              <Link to="/admin" className="text-sm font-bold text-amber-500 hover:text-amber-400 transition-colors uppercase">
+                Productos
+              </Link>
+              <Link to="/admin/ventas" className="text-sm font-bold text-[#801a4d] hover:text-[#a62164] transition-colors uppercase flex items-center gap-1">
+                <span className="w-2 h-2 bg-[#801a4d] rounded-full animate-pulse"></span>
+                Ventas
+              </Link>
+            </>
           )}
 
           {token ? (

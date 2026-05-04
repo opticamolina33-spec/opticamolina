@@ -2,9 +2,15 @@
 package opticamolina.demo.controller;
 
 import opticamolina.demo.service.PaymentService;
+import opticamolina.demo.model.Venta;
+import opticamolina.demo.repository.VentaRepository;
 import com.mercadopago.resources.payment.Payment;
+import com.mercadopago.client.payment.PaymentClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import opticamolina.demo.model.User;
+import opticamolina.demo.repository.UserRepository;
+
 
 import java.util.Map;
 
@@ -16,9 +22,12 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    // -------------------------------------------------------------------
-    // ENDPOINT 1: Genera el link para "Billetera Virtual"
-    // -------------------------------------------------------------------
+    @Autowired
+    private VentaRepository ventaRepository;
+
+    @Autowired
+    private opticamolina.demo.repository.UserRepository userRepository;
+
     @PostMapping("/create")
     public Map<String, String> create(@RequestBody Map<String, Object> data) {
         try {
@@ -34,17 +43,16 @@ public class PaymentController {
     }
 
     // -------------------------------------------------------------------
-    // ENDPOINT 2: Procesa el pago directo con Tarjeta
+    // 2. PROCESA EL PAGO DIRECTO CON TARJETA (Checkout API)
     // -------------------------------------------------------------------
     @PostMapping("/process")
     public Map<String, Object> processPayment(@RequestBody Map<String, Object> paymentData) {
         try {
-            // Mandamos los datos del Brick al Service
+            // El service procesa el cobro y YA guarda en DB (según el service que armamos)
             Payment payment = paymentService.processCardPayment(paymentData);
 
-            // Le respondemos a React cómo salió la operación
             return Map.of(
-                    "status", payment.getStatus(), // Puede ser "approved", "rejected", "in_process"
+                    "status", payment.getStatus(),
                     "id", payment.getId()
             );
 
@@ -53,6 +61,41 @@ public class PaymentController {
                     "status", "error",
                     "message", e.getMessage()
             );
+        }
+    }
+
+    @GetMapping("/confirm-order")
+    public Map<String, Object> confirmOrder(@RequestParam("payment_id") String paymentId) {
+        try {
+            PaymentClient client = new PaymentClient();
+            Payment payment = client.get(Long.parseLong(paymentId));
+
+            if (payment != null) {
+                String email = payment.getPayer().getEmail();
+                
+                // Buscamos si el usuario existe en nuestra DB para sacar su dirección
+                User usuario = userRepository.findByEmail(email).orElse(null);
+                String nombre = (usuario != null) ? usuario.getName() : "Cliente Externo";
+                String direccion = (usuario != null && usuario.getAddress() != null) ? usuario.getAddress() : "Retiro en Local / No especificada";
+
+                Venta nuevaVenta = new Venta(
+                        payment.getId().toString(),
+                        payment.getDescription(),
+                        payment.getTransactionAmount().doubleValue(),
+                        payment.getStatus(),
+                        email,
+                        nombre,
+                        direccion,
+                        payment.getPaymentMethodId() // Ej: 'visa', 'account_money'
+                );
+
+                ventaRepository.save(nuevaVenta);
+
+                return Map.of("status", "saved", "payment_status", payment.getStatus());
+            }
+            return Map.of("status", "error", "message", "Pago no encontrado");
+        } catch (Exception e) {
+            return Map.of("status", "error", "message", e.getMessage());
         }
     }
 }
