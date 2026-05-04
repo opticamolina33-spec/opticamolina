@@ -93,7 +93,11 @@ const NuevoProducto = ({ isOpen, onClose, onSuccess, productToEdit }) => {
           ...data,
           precio: parseFloat(newProduct.precio),
           stock: parseInt(newProduct.stock),
-          porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0)
+          porcentajeDescuento: parseInt(newProduct.porcentajeDescuento || 0),
+          imagenUrl: newProduct.imagenUrl
+            .split(",")
+            .map(url => url.trim()),
+          category: { id: parseInt(categoryId) }
         });
       }
 
