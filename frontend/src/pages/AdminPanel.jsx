@@ -10,6 +10,7 @@ const AdminPanel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const navigate = useNavigate();
+  const [editingProduct, setEditingProduct] = useState(null);
 
   useEffect(() => {
     const roles = JSON.parse(localStorage.getItem('roles')) || [];
@@ -189,6 +190,25 @@ const AdminPanel = () => {
                       </div>
                     </td>
 
+                    <td className="py-6 px-8 text-center space-x-3">
+                      <button
+                        onClick={() => {
+                          setEditingProduct(p);
+                          setIsModalOpen(true);
+                        }}
+                        className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-blue-400 transition-colors"
+                      >
+                        Editar
+                      </button>
+
+                      <button 
+                        onClick={() => handleDelete(p.id)} 
+                        className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 hover:text-red-500 transition-colors"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+
                     <td className="py-6 px-8 text-center">
                       <button 
                         onClick={() => handleDelete(p.id)} 
@@ -213,8 +233,12 @@ const AdminPanel = () => {
 
       <NuevoProducto 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchData} 
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingProduct(null);
+        }}
+        onSuccess={fetchData}
+        productToEdit={editingProduct}
       />
     </div>
   );
