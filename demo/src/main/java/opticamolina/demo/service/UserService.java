@@ -1,4 +1,3 @@
-// Archivo: src/main/java/opticamolina/demo/service/UserService.java
 package opticamolina.demo.service;
 
 import opticamolina.demo.model.User;
@@ -15,7 +14,6 @@ public class UserService {
     private UserRepository userRepository;
 
     public List<User> findAllUsers() {
-        // Retorna todos los usuarios registrados
         return userRepository.findAll();
     }
 }

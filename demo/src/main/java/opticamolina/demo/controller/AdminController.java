@@ -3,8 +3,9 @@ package opticamolina.demo.controller;
 
 import opticamolina.demo.model.Category;
 import opticamolina.demo.model.Product;
+import opticamolina.demo.model.User;
 import opticamolina.demo.service.ProductService;
-import opticamolina.demo.service.UserService; // Asegúrate de tener este servicio
+import opticamolina.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ProductService productService;
