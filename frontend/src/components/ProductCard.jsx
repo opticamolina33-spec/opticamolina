@@ -72,14 +72,6 @@ const ProductCard = ({ product }) => {
             </div>
           </div>
 
-          {product.stock > 0 && product.stock <= 3 && (
-            <div className="mt-4 pt-3 border-t border-gray-50">
-              <span className="text-[10px] font-bold text-orange-600 uppercase tracking-tighter italic">
-                ⚠️ Solo quedan {product.stock} unidades
-              </span>
-            </div>
-          )}
-
           {product.stock === 0 && (
             <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center">
               <span className="bg-[#1a1a1a] text-white px-6 py-2 rounded-full font-bold text-xs tracking-widest shadow-2xl">
