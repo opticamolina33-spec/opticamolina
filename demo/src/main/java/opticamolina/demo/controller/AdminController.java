@@ -4,6 +4,7 @@ package opticamolina.demo.controller;
 import opticamolina.demo.model.Category;
 import opticamolina.demo.model.Product;
 import opticamolina.demo.service.ProductService;
+import opticamolina.demo.service.UserService; // Asegúrate de tener este servicio
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,10 @@ public class AdminController {
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.findAllUsers());
+    }
 
     // Dentro de src/main/java/opticamolina/demo/controller/AdminController.java
 
@@ -63,4 +68,5 @@ public class AdminController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+    
 }

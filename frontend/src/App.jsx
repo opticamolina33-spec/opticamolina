@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login.jsx';
 import Home from './pages/Home.jsx'; 
 import AdminPanel from './pages/AdminPanel.jsx';
-import AdminDashboard from './pages/AdminDashboard.jsx'; // <--- NUEVO
+import AdminDashboard from './pages/AdminDashboard.jsx'; 
 import Success from './pages/Success';
 import Failure from './pages/Failure';
 import Register from './pages/Register.jsx';
@@ -14,6 +14,8 @@ import Pending from './pages/Pending.jsx';
 import CategoryPage from './pages/CategoryPage';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
+import AdminUsers from './pages/AdminUsers.jsx'; 
+
 
 function App() {
   return (
@@ -39,7 +41,7 @@ function App() {
               {/* Paneles de Administración */}
               <Route path="/admin" element={<AdminPanel />} /> 
               <Route path="/admin/ventas" element={<AdminDashboard />} /> 
-
+              <Route path="/admin/usuarios" element={<AdminUsers />} /> 
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/success" element={<Success />} />
               <Route path="/failure" element={<Failure />} />

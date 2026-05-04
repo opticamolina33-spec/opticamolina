@@ -44,6 +44,9 @@ const Navbar = () => {
                 <span className="w-2 h-2 bg-[#801a4d] rounded-full animate-pulse"></span>
                 Ventas
               </Link>
+              <Link to="/admin/usuarios" className="text-sm font-bold text-[#4a0e2e] hover:text-[#6a1a4d] transition-colors uppercase">
+                Usuarios
+              </Link>
             </>
           )}
 
