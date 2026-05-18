@@ -48,7 +48,7 @@ const Home = () => {
         <div className="container mx-auto text-center relative z-10">
           <div className="inline-block mb-6 px-5 py-1.5 border border-pink-300 rounded-full bg-pink-100">
             <span className="tracking-[0.5em] uppercase text-[10px] font-black text-pink-700">
-              Su óptica de confianza
+              Su optica de confianza
             </span>
           </div>
           
