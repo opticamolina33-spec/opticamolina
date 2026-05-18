@@ -53,7 +53,7 @@ const Home = () => {
           </div>
           
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 italic uppercase leading-none text-gray-900">
-            ÓPTICA <span className="text-transparent bg-clip-text bg-gradient-to-b from-gray-900 to-gray-400">MOLINA</span>
+            OPTICA <span className="text-transparent bg-clip-text bg-gradient-to-b from-gray-900 to-gray-400">MOLINA</span>
           </h1>
           
           <p className="text-gray-600 text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed tracking-wide italic">
