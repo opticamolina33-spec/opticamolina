@@ -25,7 +25,7 @@ const Navbar = () => {
             className="h-10 w-auto rounded-sm brightness-110 group-hover:scale-105 transition-transform"
           />
           <span className="hidden md:block text-xl font-black tracking-[0.2em] uppercase italic">
-            ÓPTICA MOLINA
+            OPTICA MOLINA
           </span>
         </Link>
 
