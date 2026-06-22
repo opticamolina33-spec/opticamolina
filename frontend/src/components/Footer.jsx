@@ -13,7 +13,7 @@ const Footer = () => {
             className="h-12 w-auto mb-6 opacity-80 hover:opacity-100 transition-opacity rounded-lg"
           />
           <div className="text-white font-black tracking-[0.4em] uppercase italic mb-2">
-            ÓPTICA MOLINA
+            OPTICA MOLINA
           </div>
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#801a4d] mb-8">
             Salud visual con distinción
