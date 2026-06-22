@@ -113,42 +113,39 @@ const PromocionBanner = () => {
           </div>
 
           {/* Columna derecha: dos imágenes */}
-          <div className="relative flex items-center justify-center order-1 lg:order-2 min-h-[300px] md:min-h-[420px]">
+          <div className="relative flex items-center justify-center order-1 lg:order-2 min-h-[280px] md:min-h-[380px]">
 
             {/* Imagen 2 (fondo, ladeada) */}
             {promo.imagen2Url && (
               <div
-                className="absolute right-0 top-4 w-[48%] md:w-[45%] aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-black/60 border border-white/5"
-                style={{ transform: 'rotate(6deg) translateY(10px)' }}
+                className="absolute right-0 top-2 w-[42%] md:w-[38%] rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/10 bg-white"
+                style={{ transform: 'rotate(7deg) translateY(14px)', padding: '10%' }}
               >
                 <img
                   src={promo.imagen2Url}
                   alt="Promo imagen 2"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                 />
-                {/* Overlay sutil */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
             )}
 
             {/* Imagen 1 (frente, prominente) */}
             {promo.imagen1Url && (
               <div
-                className="relative left-0 w-[55%] md:w-[52%] aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10 z-10"
-                style={{ transform: 'rotate(-4deg) translateY(-8px)' }}
+                className="relative left-0 w-[48%] md:w-[44%] rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10 bg-white z-10"
+                style={{ transform: 'rotate(-5deg) translateY(-10px)', padding: '10%' }}
               >
                 <img
                   src={promo.imagen1Url}
                   alt="Promo imagen 1"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               </div>
             )}
 
             {/* Glow de fondo entre las imágenes */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-48 h-48 bg-pink-500/20 rounded-full blur-3xl" />
+              <div className="w-40 h-40 bg-pink-500/15 rounded-full blur-3xl" />
             </div>
           </div>
         </div>

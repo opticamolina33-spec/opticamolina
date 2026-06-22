@@ -91,13 +91,13 @@ const AdminPromociones = () => {
                 {/* Preview */}
                 <div className="w-full md:w-64 flex-shrink-0 relative bg-gradient-to-br from-zinc-900 to-pink-950 flex items-center justify-center p-6 gap-3 min-h-[120px]">
                   {promo.imagen2Url && (
-                    <div className="w-14 h-14 rounded-xl overflow-hidden shadow-lg flex-shrink-0" style={{ transform: 'rotate(4deg)' }}>
-                      <img src={promo.imagen2Url} alt="" className="w-full h-full object-cover" />
+                    <div className="w-14 h-14 rounded-xl overflow-hidden shadow-lg flex-shrink-0 bg-white flex items-center justify-center p-1" style={{ transform: 'rotate(4deg)' }}>
+                      <img src={promo.imagen2Url} alt="" className="w-full h-full object-contain" />
                     </div>
                   )}
                   {promo.imagen1Url && (
-                    <div className="w-16 h-16 rounded-xl overflow-hidden shadow-xl flex-shrink-0 z-10" style={{ transform: 'rotate(-3deg)' }}>
-                      <img src={promo.imagen1Url} alt="" className="w-full h-full object-cover" />
+                    <div className="w-16 h-16 rounded-xl overflow-hidden shadow-xl flex-shrink-0 bg-white flex items-center justify-center p-1 z-10" style={{ transform: 'rotate(-3deg)' }}>
+                      <img src={promo.imagen1Url} alt="" className="w-full h-full object-contain" />
                     </div>
                   )}
                   {!promo.imagen1Url && !promo.imagen2Url && (

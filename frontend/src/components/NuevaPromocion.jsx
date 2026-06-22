@@ -215,15 +215,15 @@ const NuevaPromocion = ({ isOpen, onClose, onSuccess, promoToEdit }) => {
                     </p>
                   )}
                 </div>
-                <div className="flex gap-2 relative">
+                <div className="flex gap-2 relative items-end">
                   {form.imagen2Url && (
-                    <div className="w-16 h-16 rounded-xl overflow-hidden shadow-lg" style={{ transform: 'rotate(5deg)' }}>
-                      <img src={form.imagen2Url} alt="" className="w-full h-full object-cover" />
+                    <div className="w-16 h-16 rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center p-1" style={{ transform: 'rotate(5deg)' }}>
+                      <img src={form.imagen2Url} alt="" className="w-full h-full object-contain" />
                     </div>
                   )}
                   {form.imagen1Url && (
-                    <div className="w-20 h-20 rounded-xl overflow-hidden shadow-xl z-10" style={{ transform: 'rotate(-3deg)' }}>
-                      <img src={form.imagen1Url} alt="" className="w-full h-full object-cover" />
+                    <div className="w-20 h-20 rounded-xl overflow-hidden shadow-xl bg-white flex items-center justify-center p-1 z-10" style={{ transform: 'rotate(-3deg)' }}>
+                      <img src={form.imagen1Url} alt="" className="w-full h-full object-contain" />
                     </div>
                   )}
                 </div>

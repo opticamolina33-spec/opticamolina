@@ -118,32 +118,32 @@ const PromocionDetail = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-start">
 
           {/* ── IMÁGENES ── */}
-          <div className="relative flex items-center justify-center min-h-[360px]">
+          <div className="relative flex items-center justify-center min-h-[300px]">
 
             {/* Imagen 2 (fondo) */}
             {promo.imagen2Url && (
               <div
-                className="absolute right-0 top-4 w-[46%] aspect-square rounded-3xl overflow-hidden shadow-2xl border border-gray-100"
-                style={{ transform: 'rotate(5deg) translateY(12px)' }}
+                className="absolute right-0 top-2 w-[44%] rounded-2xl overflow-hidden shadow-xl border border-gray-100 bg-white"
+                style={{ transform: 'rotate(6deg) translateY(14px)', padding: '8%' }}
               >
-                <img src={promo.imagen2Url} alt="Vista 2" className="w-full h-full object-cover" />
+                <img src={promo.imagen2Url} alt="Vista 2" className="w-full h-auto object-contain" />
               </div>
             )}
 
             {/* Imagen 1 (frente) */}
-            {promo.imagen1Url && (
+            {promo.imagen1Url && promo.imagen2Url && (
               <div
-                className="relative left-0 w-[54%] aspect-square rounded-3xl overflow-hidden shadow-2xl border border-gray-100 z-10"
-                style={{ transform: 'rotate(-3deg) translateY(-6px)' }}
+                className="relative left-0 w-[50%] rounded-2xl overflow-hidden shadow-2xl border border-gray-100 bg-white z-10"
+                style={{ transform: 'rotate(-4deg) translateY(-8px)', padding: '8%' }}
               >
-                <img src={promo.imagen1Url} alt="Vista 1" className="w-full h-full object-cover" />
+                <img src={promo.imagen1Url} alt="Vista 1" className="w-full h-auto object-contain" />
               </div>
             )}
 
             {/* Solo imagen 1 sin imagen 2 */}
             {promo.imagen1Url && !promo.imagen2Url && (
-              <div className="w-full aspect-video rounded-3xl overflow-hidden shadow-xl border border-gray-100">
-                <img src={promo.imagen1Url} alt={promo.titulo} className="w-full h-full object-cover" />
+              <div className="w-full rounded-3xl overflow-hidden shadow-xl border border-gray-100 bg-white p-8">
+                <img src={promo.imagen1Url} alt={promo.titulo} className="w-full h-auto object-contain max-h-72 mx-auto" />
               </div>
             )}
           </div>
