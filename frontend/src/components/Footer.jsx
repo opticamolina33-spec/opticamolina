@@ -69,7 +69,7 @@ const Footer = () => {
           </div>
           
           <p className="text-[9px] text-gray-600 tracking-[0.3em] uppercase">
-            &copy; 2026 Óptica Molina. Vanguardia Visual. Argentina.
+            &copy; 2026 Optica Molina. Vanguardia Visual. Argentina.
           </p>
         </div>
       </div>
