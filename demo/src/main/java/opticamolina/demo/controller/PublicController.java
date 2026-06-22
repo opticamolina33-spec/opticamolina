@@ -3,7 +3,9 @@ package opticamolina.demo.controller;
 
 import opticamolina.demo.model.Category;
 import opticamolina.demo.model.Product;
+import opticamolina.demo.model.Promocion;
 import opticamolina.demo.service.ProductService;
+import opticamolina.demo.service.PromocionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ public class PublicController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private PromocionService promocionService;
 
     @GetMapping("/categories")
     public List<Category> getAllCategories() {
@@ -32,14 +37,28 @@ public class PublicController {
         return productService.getProductsByCategory(categoryId);
     }
 
-    // --- CORREGIDO: Ya no usa .map() porque el Service devuelve Product directamente ---
     @GetMapping("/products/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         try {
             Product product = productService.getProductById(id);
             return ResponseEntity.ok(product);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build(); // Esto devuelve el 404 que React entiende mejor
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // ─── PROMOCIONES (público) ────────────────────────────────────────────────
+    @GetMapping("/promociones")
+    public ResponseEntity<List<Promocion>> getPromocionesActivas() {
+        return ResponseEntity.ok(promocionService.getPromocionesActivas());
+    }
+
+    @GetMapping("/promociones/{id}")
+    public ResponseEntity<Promocion> getPromocionById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(promocionService.getPromocionById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

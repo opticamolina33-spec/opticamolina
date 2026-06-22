@@ -47,6 +47,10 @@ const Navbar = () => {
               <Link to="/admin/usuarios" className="text-sm font-bold text-[#4a0e2e] hover:text-[#6a1a4d] transition-colors uppercase">
                 Usuarios
               </Link>
+              <Link to="/admin/promociones" className="text-sm font-bold text-pink-500 hover:text-pink-400 transition-colors uppercase flex items-center gap-1">
+                <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
+                Promos
+              </Link>
             </>
           )}
 

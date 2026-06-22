@@ -3,8 +3,10 @@ package opticamolina.demo.controller;
 
 import opticamolina.demo.model.Category;
 import opticamolina.demo.model.Product;
+import opticamolina.demo.model.Promocion;
 import opticamolina.demo.model.User;
 import opticamolina.demo.service.ProductService;
+import opticamolina.demo.service.PromocionService;
 import opticamolina.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +24,16 @@ public class AdminController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private PromocionService promocionService;
+
+    // ─── CATEGORÍAS ──────────────────────────────────────────────────────────
     @PostMapping("/categories")
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
         return ResponseEntity.ok(productService.saveCategory(category));
     }
 
+    // ─── PRODUCTOS ────────────────────────────────────────────────────────────
     @PostMapping("/products/{categoryId}")
     public ResponseEntity<Product> createProduct(@RequestBody Product product, @PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.saveProduct(product, categoryId));
@@ -53,13 +60,14 @@ public class AdminController {
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
+
+    // ─── USUARIOS ─────────────────────────────────────────────────────────────
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
-    // Dentro de src/main/java/opticamolina/demo/controller/AdminController.java
-
+    // ─── MERCADO LIBRE ────────────────────────────────────────────────────────
     @Autowired
     private opticamolina.demo.service.MercadoLibreSyncService mlSyncService;
 
@@ -72,5 +80,26 @@ public class AdminController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-    
+
+    // ─── PROMOCIONES ──────────────────────────────────────────────────────────
+    @GetMapping("/promociones")
+    public ResponseEntity<List<Promocion>> getAllPromociones() {
+        return ResponseEntity.ok(promocionService.getAllPromociones());
+    }
+
+    @PostMapping("/promociones")
+    public ResponseEntity<Promocion> createPromocion(@RequestBody Promocion promocion) {
+        return ResponseEntity.ok(promocionService.savePromocion(promocion));
+    }
+
+    @PutMapping("/promociones/{id}")
+    public ResponseEntity<Promocion> updatePromocion(@PathVariable Long id, @RequestBody Promocion details) {
+        return ResponseEntity.ok(promocionService.updatePromocion(id, details));
+    }
+
+    @DeleteMapping("/promociones/{id}")
+    public ResponseEntity<String> deletePromocion(@PathVariable Long id) {
+        promocionService.deletePromocion(id);
+        return ResponseEntity.ok("Promoción eliminada correctamente");
+    }
 }

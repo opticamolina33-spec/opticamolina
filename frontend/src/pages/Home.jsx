@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import ProductSkeleton from '../components/ProductSkeleton';
+import PromocionBanner from '../components/PromocionBanner';
 import Footer from '../components/Footer';
 
 const Home = () => {
@@ -62,6 +63,9 @@ const Home = () => {
           </p>
         </div>
       </div>
+
+      {/* ── BANNER DE PROMOCIONES (solo aparece si hay promos activas) ── */}
+      <PromocionBanner />
 
       <main className="container mx-auto px-6 md:px-12 py-20">
         
