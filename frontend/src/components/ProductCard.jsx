@@ -30,7 +30,7 @@ const ProductCard = ({ product }) => {
         )}
 
         {/* Contenedor de Imagen */}
-        <div className="relative h-64 overflow-hidden bg-[#f9f9f9]">
+        <div className="relative h-64 overflow-hidden bg-[#ffffff]">
           <img 
             src={primeraImagen} 
             alt={product.nombre}
