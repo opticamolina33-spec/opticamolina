@@ -222,7 +222,7 @@ const ProductDetail = () => {
 
             <div className="mt-12 flex flex-wrap gap-8 border-t border-gray-100 pt-8">
               <div className="flex items-center gap-3 italic text-[10px] text-gray-400 uppercase tracking-widest">
-                Protección UV400 • Lentes Certificados • Óptica Molina
+                Protección UV400 • Lentes Certificados • Optica Molina
               </div>
             </div>
           </div>
