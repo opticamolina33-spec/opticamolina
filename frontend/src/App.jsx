@@ -7,6 +7,7 @@ import AdminPanel from './pages/AdminPanel.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx'; 
 import AdminUsers from './pages/AdminUsers.jsx'; 
 import AdminPromociones from './pages/AdminPromociones.jsx';
+import AdminCategorias from './pages/AdminCategorias.jsx';
 import Success from './pages/Success';
 import Failure from './pages/Failure';
 import Register from './pages/Register.jsx';
@@ -45,6 +46,7 @@ function App() {
               <Route path="/admin/ventas" element={<AdminDashboard />} /> 
               <Route path="/admin/usuarios" element={<AdminUsers />} />
               <Route path="/admin/promociones" element={<AdminPromociones />} />
+              <Route path="/admin/categorias" element={<AdminCategorias />} />
 
               {/* Productos y Promociones */}
               <Route path="/product/:id" element={<ProductDetail />} />

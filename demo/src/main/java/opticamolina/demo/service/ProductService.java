@@ -1,4 +1,3 @@
-// Archivo: src/main/java/opticamolina/demo/service/ProductService.java
 package opticamolina.demo.service;
 
 import opticamolina.demo.model.Category;
@@ -20,13 +19,40 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    // ─── CATEGORÍAS ──────────────────────────────────────────────────────────
+
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);
+    }
+
+    public Category updateCategory(Long id, Category details) {
+        Category existing = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + id));
+        existing.setName(details.getName());
+        return categoryRepository.save(existing);
+    }
+
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + id));
+
+        // Protección: no permitir borrar si tiene productos asociados
+        List<Product> productos = productRepository.findByCategoryId(id);
+        if (!productos.isEmpty()) {
+            throw new RuntimeException(
+                "No se puede eliminar \"" + category.getName() + "\" porque tiene " +
+                productos.size() + " producto(s) asociado(s). Reasigná o eliminá los productos primero."
+            );
+        }
+
+        categoryRepository.deleteById(id);
     }
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+
+    // ─── PRODUCTOS ────────────────────────────────────────────────────────────
 
     public Product saveProduct(Product product, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)

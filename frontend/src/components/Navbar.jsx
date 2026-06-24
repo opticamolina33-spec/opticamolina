@@ -25,7 +25,7 @@ const Navbar = () => {
             className="h-10 w-auto rounded-sm brightness-110 group-hover:scale-105 transition-transform"
           />
           <span className="hidden md:block text-xl font-black tracking-[0.2em] uppercase italic">
-            OPTICA MOLINA
+            ÓPTICA MOLINA
           </span>
         </Link>
 
@@ -39,6 +39,9 @@ const Navbar = () => {
             <>
               <Link to="/admin" className="text-sm font-bold text-amber-500 hover:text-amber-400 transition-colors uppercase">
                 Productos
+              </Link>
+              <Link to="/admin/categorias" className="text-sm font-bold text-cyan-500 hover:text-cyan-400 transition-colors uppercase">
+                Categorías
               </Link>
               <Link to="/admin/ventas" className="text-sm font-bold text-[#801a4d] hover:text-[#a62164] transition-colors uppercase flex items-center gap-1">
                 <span className="w-2 h-2 bg-[#801a4d] rounded-full animate-pulse"></span>

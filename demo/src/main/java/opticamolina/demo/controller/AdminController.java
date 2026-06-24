@@ -1,4 +1,3 @@
-// Archivo: src/main/java/opticamolina/demo/controller/AdminController.java
 package opticamolina.demo.controller;
 
 import opticamolina.demo.model.Category;
@@ -18,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+
     @Autowired
     private UserService userService;
 
@@ -27,13 +27,33 @@ public class AdminController {
     @Autowired
     private PromocionService promocionService;
 
+    @Autowired
+    private opticamolina.demo.service.MercadoLibreSyncService mlSyncService;
+
     // ─── CATEGORÍAS ──────────────────────────────────────────────────────────
+
     @PostMapping("/categories")
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
         return ResponseEntity.ok(productService.saveCategory(category));
     }
 
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category details) {
+        return ResponseEntity.ok(productService.updateCategory(id, details));
+    }
+
+    @DeleteMapping("/categories/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+        try {
+            productService.deleteCategory(id);
+            return ResponseEntity.ok(Map.of("message", "Categoría eliminada correctamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     // ─── PRODUCTOS ────────────────────────────────────────────────────────────
+
     @PostMapping("/products/{categoryId}")
     public ResponseEntity<Product> createProduct(@RequestBody Product product, @PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.saveProduct(product, categoryId));
@@ -62,14 +82,13 @@ public class AdminController {
     }
 
     // ─── USUARIOS ─────────────────────────────────────────────────────────────
+
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
     // ─── MERCADO LIBRE ────────────────────────────────────────────────────────
-    @Autowired
-    private opticamolina.demo.service.MercadoLibreSyncService mlSyncService;
 
     @PostMapping("/mercadolibre/sync")
     public ResponseEntity<Map<String, String>> syncMercadoLibre() {
@@ -82,6 +101,7 @@ public class AdminController {
     }
 
     // ─── PROMOCIONES ──────────────────────────────────────────────────────────
+
     @GetMapping("/promociones")
     public ResponseEntity<List<Promocion>> getAllPromociones() {
         return ResponseEntity.ok(promocionService.getAllPromociones());
