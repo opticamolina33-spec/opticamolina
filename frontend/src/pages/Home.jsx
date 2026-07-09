@@ -10,6 +10,9 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Nuevo estado para el ordenamiento
+  const [sortBy, setSortBy] = useState('categoria');
 
   useEffect(() => {
     fetchData();
@@ -32,12 +35,86 @@ const Home = () => {
     }
   };
 
-  const groupedProducts = categories.map((cat) => ({
-    ...cat,
-    items: products.filter(
-      (p) => p.category?.id === cat.id
-    )
-  }));
+  // ── LÓGICA DE ORDENAMIENTO Y AGRUPACIÓN ──
+
+  let contentToRender = null;
+
+  if (sortBy === 'categoria') {
+    const groupedByCategory = categories.map((cat) => ({
+      ...cat,
+      items: products.filter((p) => p.category?.id === cat.id)
+    }));
+    
+    contentToRender = groupedByCategory.map((group) => (
+      group.items.length > 0 && (
+        <section key={group.id}>
+          <div className="mb-6 flex items-center justify-between">
+            <Link to={`/categoria/${group.id}`}>
+              <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-wide text-gray-900 hover:opacity-70 transition cursor-pointer">
+                {group.name}
+              </h3>
+            </Link>
+          </div>
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+            {group.items.map((product) => (
+              <div key={product.id} className="min-w-[260px] max-w-[260px] flex-shrink-0 group transition-all duration-500 hover:scale-[1.03]">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    ));
+  } 
+  
+  else if (sortBy === 'marca') {
+    // Obtenemos las marcas únicas. NOTA: Asegurate de que tu objeto product tenga la propiedad 'marca' o 'brand'
+    const uniqueBrands = [...new Set(products.map(p => p.marca || p.brand || 'Sin Marca'))];
+    
+    const groupedByBrand = uniqueBrands.map(brand => ({
+      name: brand,
+      items: products.filter(p => (p.marca || p.brand || 'Sin Marca') === brand)
+    }));
+
+    contentToRender = groupedByBrand.map((group, idx) => (
+      group.items.length > 0 && (
+        <section key={idx}>
+          <div className="mb-6 flex items-center justify-between">
+            <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-wide text-gray-900">
+              {group.name}
+            </h3>
+          </div>
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+            {group.items.map((product) => (
+              <div key={product.id} className="min-w-[260px] max-w-[260px] flex-shrink-0 group transition-all duration-500 hover:scale-[1.03]">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    ));
+  } 
+  
+  else if (sortBy === 'precio_asc' || sortBy === 'precio_desc') {
+    // Ordenamiento plano (grilla) por precio
+    const sortedProducts = [...products].sort((a, b) => {
+      // NOTA: Asegurate de que la propiedad de precio coincida con la de tu base de datos (p.price o p.precio)
+      const priceA = a.precio || a.price || 0;
+      const priceB = b.precio || b.price || 0;
+      return sortBy === 'precio_asc' ? priceA - priceB : priceB - priceA;
+    });
+
+    contentToRender = (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {sortedProducts.map((product) => (
+          <div key={product.id} className="transition-all duration-500 hover:scale-[1.03]">
+            <ProductCard product={product} />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
@@ -64,14 +141,14 @@ const Home = () => {
         </div>
       </div>
 
-      {/* ── BANNER DE PROMOCIONES (solo aparece si hay promos activas) ── */}
+      {/* ── BANNER DE PROMOCIONES ── */}
       <PromocionBanner />
 
       <main className="container mx-auto px-6 md:px-12 py-20">
         
         {/* HEADER CATÁLOGO */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-4 border-l-4 border-pink-400 pl-6">
-          <div>
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-16 gap-6 border-l-4 border-pink-400 pl-6">
+          <div className="flex-1">
             <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase italic">
               Catálogo de Armazones
             </h2>
@@ -80,13 +157,32 @@ const Home = () => {
             </p>
           </div>
 
-          {!loading && (
-            <div className="bg-gray-100 px-6 py-2 rounded-2xl border border-gray-200">
-              <span className="text-[10px] font-black text-gray-700 tracking-widest uppercase italic">
-                {products.length} Modelos Curados
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
+            {/* SELECTOR DE ORDENAMIENTO */}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                Ordenar por:
               </span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold uppercase tracking-wider rounded-xl focus:ring-pink-500 focus:border-pink-500 block px-4 py-2.5 outline-none cursor-pointer italic shadow-sm transition-all hover:bg-gray-100"
+              >
+                <option value="categoria">Categoría</option>
+                <option value="marca">Marca</option>
+                <option value="precio_asc">Menor precio</option>
+                <option value="precio_desc">Mayor precio</option>
+              </select>
             </div>
-          )}
+
+            {!loading && (
+              <div className="bg-gray-100 px-6 py-2.5 rounded-2xl border border-gray-200 shrink-0">
+                <span className="text-[10px] font-black text-gray-700 tracking-widest uppercase italic">
+                  {products.length} Modelos Curados
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* LOADING */}
@@ -98,7 +194,6 @@ const Home = () => {
           </div>
 
         ) : products.length === 0 ? (
-
           <div className="text-center py-32 bg-gray-100 rounded-[3rem] border border-gray-200 shadow-inner">
             <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-8 h-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,36 +209,9 @@ const Home = () => {
           </div>
 
         ) : (
-
           <div className="space-y-20">
-            {groupedProducts.map((category) => (
-              category.items.length > 0 && (
-                <section key={category.id}>
-                  
-                  <div className="mb-6 flex items-center justify-between">
-                    <Link to={`/categoria/${category.id}`}>
-                      <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-wide text-gray-900 hover:opacity-70 transition cursor-pointer">
-                        {category.name}
-                      </h3>
-                    </Link>
-                  </div>
-
-                  <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                    {category.items.map((product) => (
-                      <div
-                        key={product.id}
-                        className="min-w-[260px] max-w-[260px] flex-shrink-0 group transition-all duration-500 hover:scale-[1.03]"
-                      >
-                        <ProductCard product={product} />
-                      </div>
-                    ))}
-                  </div>
-
-                </section>
-              )
-            ))}
+            {contentToRender}
           </div>
-
         )}
       </main>
 
