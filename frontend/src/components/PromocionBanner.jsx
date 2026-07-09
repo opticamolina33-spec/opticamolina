@@ -75,7 +75,7 @@ const PromocionBanner = () => {
             </div>
 
             {/* Título - Tamaños de fuente reducidos (text-3xl a text-6xl) */}
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter italic uppercase leading-tight mb-6">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-white tracking-tighter italic uppercase leading-tight mb-6">
               {promo.titulo}
             </h2>
 
