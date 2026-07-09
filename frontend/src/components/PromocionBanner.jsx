@@ -66,22 +66,22 @@ const PromocionBanner = () => {
 
           {/* Columna izquierda: texto */}
           <div className="flex flex-col justify-center order-2 lg:order-1">
-            {/* Etiqueta */}
-            <div className="inline-flex items-center gap-2 mb-6 w-fit">
+            {/* Etiqueta - Tamaño de fuente reducido a text-[8px] y tracking más ajustado */}
+            <div className="inline-flex items-center gap-2 mb-4 w-fit">
               <span className="w-2 h-2 rounded-full bg-pink-400 animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-300">
+              <span className="text-[8px] font-black uppercase tracking-[0.3em] text-pink-300">
                 Promoción especial
               </span>
             </div>
 
-            {/* Título */}
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter italic uppercase leading-none mb-6">
+            {/* Título - Tamaños de fuente reducidos (text-3xl a text-6xl) */}
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter italic uppercase leading-tight mb-6">
               {promo.titulo}
             </h2>
 
-            {/* Descripción */}
+            {/* Descripción - Tamaño de fuente reducido a text-xs y text-sm */}
             {promo.descripcion && (
-              <p className="text-gray-400 text-sm md:text-base font-light leading-relaxed max-w-md mb-8">
+              <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed max-w-md mb-8">
                 {promo.descripcion}
               </p>
             )}
@@ -90,11 +90,13 @@ const PromocionBanner = () => {
             <div className="flex flex-wrap items-center gap-6">
               {promo.precio && (
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Precio</span>
+                  {/* Etiqueta de precio reducida */}
+                  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Precio</span>
                   <span className="text-4xl font-black text-white tracking-tighter italic">
                     ${promo.precio.toLocaleString('es-AR')}
                   </span>
-                  <span className="text-[10px] text-gray-500 font-bold">ARS</span>
+                  {/* Etiqueta ARS reducida */}
+                  <span className="text-[8px] text-gray-500 font-bold">ARS</span>
                 </div>
               )}
 
@@ -112,14 +114,14 @@ const PromocionBanner = () => {
             </div>
           </div>
 
-          {/* Columna derecha: dos imágenes */}
+          {/* Columna derecha: dos imágenes con imágenes MÁS GRANDES */}
           <div className="relative flex items-center justify-center order-1 lg:order-2 min-h-[280px] md:min-h-[380px]">
 
-            {/* Imagen 2 (fondo, ladeada) */}
+            {/* Imagen 2 (fondo, ladeada) - Padding reducido para imagen más grande */}
             {promo.imagen2Url && (
               <div
                 className="absolute right-0 top-2 w-[42%] md:w-[38%] rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/10 bg-white"
-                style={{ transform: 'rotate(7deg) translateY(14px)', padding: '10%' }}
+                style={{ transform: 'rotate(7deg) translateY(14px)', padding: '2%' }} // Padding reducido
               >
                 <img
                   src={promo.imagen2Url}
@@ -129,11 +131,11 @@ const PromocionBanner = () => {
               </div>
             )}
 
-            {/* Imagen 1 (frente, prominente) */}
+            {/* Imagen 1 (frente, prominente) - Padding reducido para imagen más grande y ancho aumentado */}
             {promo.imagen1Url && (
               <div
-                className="relative left-0 w-[48%] md:w-[44%] rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10 bg-white z-10"
-                style={{ transform: 'rotate(-5deg) translateY(-10px)', padding: '10%' }}
+                className="relative left-0 w-[50%] md:w-[46%] rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10 bg-white z-10" // Ancho ligeramente mayor
+                style={{ transform: 'rotate(-5deg) translateY(-10px)', padding: '2%' }} // Padding reducido
               >
                 <img
                   src={promo.imagen1Url}
