@@ -11,7 +11,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Nuevo estado para el ordenamiento
+  // Estado para el ordenamiento
   const [sortBy, setSortBy] = useState('categoria');
 
   useEffect(() => {
@@ -35,8 +35,25 @@ const Home = () => {
     }
   };
 
-  // ── LÓGICA DE ORDENAMIENTO Y AGRUPACIÓN ──
+  // ── FUNCIÓN EXTRACTORA DE MARCAS ──
+  // Detecta la marca a partir del nombre (ej: "VULK - LEVOL" -> "VULK")
+  const extraerMarca = (nombre) => {
+    if (!nombre) return 'OTROS';
+    
+    // Si tiene guion, cortamos por el guion y tomamos la primera parte
+    if (nombre.includes('-')) {
+      return nombre.split('-')[0].trim().toUpperCase();
+    }
+    // Si tiene espacios, tomamos la primera palabra
+    if (nombre.includes(' ')) {
+      return nombre.split(' ')[0].trim().toUpperCase();
+    }
+    // Si es solo una palabra, esa es la marca
+    return nombre.trim().toUpperCase();
+  };
 
+
+  // ── LÓGICA DE ORDENAMIENTO Y AGRUPACIÓN ──
   let contentToRender = null;
 
   if (sortBy === 'categoria') {
@@ -68,12 +85,19 @@ const Home = () => {
   } 
   
   else if (sortBy === 'marca') {
-    // Obtenemos las marcas únicas. NOTA: Asegurate de que tu objeto product tenga la propiedad 'marca' o 'brand'
-    const uniqueBrands = [...new Set(products.map(p => p.marca || p.brand || 'Sin Marca'))];
+    // 1. Mapeamos los productos agregándoles la marca detectada
+    const productsConMarca = products.map(p => ({
+      ...p,
+      marcaDetectada: extraerMarca(p.nombre || p.name)
+    }));
+
+    // 2. Sacamos una lista única de todas las marcas encontradas y las ordenamos alfabéticamente
+    const marcasUnicas = [...new Set(productsConMarca.map(p => p.marcaDetectada))].sort();
     
-    const groupedByBrand = uniqueBrands.map(brand => ({
-      name: brand,
-      items: products.filter(p => (p.marca || p.brand || 'Sin Marca') === brand)
+    // 3. Agrupamos los productos usando esa lista
+    const groupedByBrand = marcasUnicas.map(marca => ({
+      name: marca,
+      items: productsConMarca.filter(p => p.marcaDetectada === marca)
     }));
 
     contentToRender = groupedByBrand.map((group, idx) => (
@@ -99,9 +123,9 @@ const Home = () => {
   else if (sortBy === 'precio_asc' || sortBy === 'precio_desc') {
     // Ordenamiento plano (grilla) por precio
     const sortedProducts = [...products].sort((a, b) => {
-      // NOTA: Asegurate de que la propiedad de precio coincida con la de tu base de datos (p.price o p.precio)
-      const priceA = a.precio || a.price || 0;
-      const priceB = b.precio || b.price || 0;
+      // Ajustado a "precio" o "price" según tu BD
+      const priceA = Number(a.precio || a.price || 0);
+      const priceB = Number(b.precio || b.price || 0);
       return sortBy === 'precio_asc' ? priceA - priceB : priceB - priceA;
     });
 
