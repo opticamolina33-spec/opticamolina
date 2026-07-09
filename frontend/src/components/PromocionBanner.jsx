@@ -120,7 +120,7 @@ const PromocionBanner = () => {
             {/* Imagen 2 (fondo, ladeada) - Padding reducido para imagen más grande */}
             {promo.imagen2Url && (
               <div
-                className="absolute right-0 top-2 w-[42%] md:w-[38%] rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/10 bg-white"
+                className="absolute right-0 top-2 w-[42%] md:w-[38%] rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/10"
                 style={{ transform: 'rotate(7deg) translateY(14px)', padding: '2%' }} // Padding reducido
               >
                 <img
@@ -134,7 +134,7 @@ const PromocionBanner = () => {
             {/* Imagen 1 (frente, prominente) - Padding reducido para imagen más grande y ancho aumentado */}
             {promo.imagen1Url && (
               <div
-                className="relative left-0 w-[50%] md:w-[46%] rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10 bg-white z-10" // Ancho ligeramente mayor
+                className="relative left-0 w-[50%] md:w-[46%] rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10" // Ancho ligeramente mayor
                 style={{ transform: 'rotate(-5deg) translateY(-10px)', padding: '2%' }} // Padding reducido
               >
                 <img
