@@ -1,10 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import ProductSkeleton from '../components/ProductSkeleton';
 import PromocionBanner from '../components/PromocionBanner';
 import Footer from '../components/Footer';
+
+// Wrapper que usa IntersectionObserver para diferir el render de secciones off-screen
+const LazySection = ({ children }) => {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { rootMargin: '200px' }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return <div ref={ref}>{visible ? children : <div className="h-64 animate-pulse bg-gray-100 rounded-2xl" />}</div>;
+};
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -61,9 +79,12 @@ const Home = () => {
       ...cat,
       items: products.filter((p) => p.category?.id === cat.id)
     }));
-    
-    contentToRender = groupedByCategory.map((group) => (
-      group.items.length > 0 && (
+
+    contentToRender = groupedByCategory.map((group, groupIdx) => {
+      if (!group.items.length) return null;
+      const isFirst = groupIdx === 0;
+
+      const section = (
         <section key={group.id}>
           <div className="mb-6 flex items-center justify-between">
             <Link to={`/categoria/${group.id}`}>
@@ -73,16 +94,20 @@ const Home = () => {
             </Link>
           </div>
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-            {group.items.map((product) => (
+            {group.items.map((product, itemIdx) => (
               <div key={product.id} className="min-w-[260px] max-w-[260px] flex-shrink-0 group transition-all duration-500 hover:scale-[1.03]">
-                <ProductCard product={product} />
+                {/* Primeros 5 de la primera categoría cargan eager, el resto lazy */}
+                <ProductCard product={product} imgLoading={isFirst && itemIdx < 5 ? 'eager' : 'lazy'} />
               </div>
             ))}
           </div>
         </section>
-      )
-    ));
-  } 
+      );
+
+      // Primera categoría: render inmediato. Las demás: diferidas hasta que el usuario scrollee
+      return isFirst ? section : <LazySection key={group.id}>{section}</LazySection>;
+    });
+  }
   
   else if (sortBy === 'marca') {
     // 1. Mapeamos los productos agregándoles la marca detectada
@@ -100,8 +125,10 @@ const Home = () => {
       items: productsConMarca.filter(p => p.marcaDetectada === marca)
     }));
 
-    contentToRender = groupedByBrand.map((group, idx) => (
-      group.items.length > 0 && (
+    contentToRender = groupedByBrand.map((group, idx) => {
+      if (!group.items.length) return null;
+      const isFirst = idx === 0;
+      const section = (
         <section key={idx}>
           <div className="mb-6 flex items-center justify-between">
             <h3 className="text-xl md:text-2xl font-black uppercase italic tracking-wide text-gray-900">
@@ -109,15 +136,16 @@ const Home = () => {
             </h3>
           </div>
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-            {group.items.map((product) => (
+            {group.items.map((product, itemIdx) => (
               <div key={product.id} className="min-w-[260px] max-w-[260px] flex-shrink-0 group transition-all duration-500 hover:scale-[1.03]">
-                <ProductCard product={product} />
+                <ProductCard product={product} imgLoading={isFirst && itemIdx < 5 ? 'eager' : 'lazy'} />
               </div>
             ))}
           </div>
         </section>
-      )
-    ));
+      );
+      return isFirst ? section : <LazySection key={idx}>{section}</LazySection>;
+    });
   } 
   
   else if (sortBy === 'precio_asc' || sortBy === 'precio_desc') {
@@ -131,9 +159,9 @@ const Home = () => {
 
     contentToRender = (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {sortedProducts.map((product) => (
+        {sortedProducts.map((product, idx) => (
           <div key={product.id} className="transition-all duration-500 hover:scale-[1.03]">
-            <ProductCard product={product} />
+            <ProductCard product={product} imgLoading={idx < 8 ? 'eager' : 'lazy'} />
           </div>
         ))}
       </div>

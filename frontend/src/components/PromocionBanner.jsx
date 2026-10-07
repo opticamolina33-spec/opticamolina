@@ -126,6 +126,9 @@ const PromocionBanner = () => {
                 <img
                   src={promo.imagen2Url}
                   alt="Promo imagen 2"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="sync"
                   className="w-full h-auto object-contain"
                 />
               </div>
@@ -140,6 +143,9 @@ const PromocionBanner = () => {
                 <img
                   src={promo.imagen1Url}
                   alt="Promo imagen 1"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="sync"
                   className="w-full h-auto object-contain"
                 />
               </div>

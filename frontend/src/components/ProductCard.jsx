@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, imgLoading = 'lazy' }) => {
   
   const formatCurrency = (value) => {
     return value?.toLocaleString('es-AR', {
@@ -31,9 +31,11 @@ const ProductCard = ({ product }) => {
 
         {/* Contenedor de Imagen */}
         <div className="relative h-64 overflow-hidden bg-[#ffffff]">
-          <img 
-            src={primeraImagen} 
+          <img
+            src={primeraImagen}
             alt={product.nombre}
+            loading={imgLoading}
+            decoding="async"
             className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300"></div>
