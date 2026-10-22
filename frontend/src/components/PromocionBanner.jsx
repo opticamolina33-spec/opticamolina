@@ -53,7 +53,7 @@ const PromocionBanner = ({ brands = [], onBrand }) => {
 
         {promo?.imagen1Url && (
           <div className="hidden md:block absolute right-[-4%] bottom-[-8%] w-[52%] rotate-[-6deg] rounded-3xl bg-white p-6 shadow-2xl">
-            <img src={promo.imagen1Url} alt="" className="w-full h-auto object-contain" />
+            <img src={promo.imagen1Url} alt="" loading="eager" fetchPriority="high" className="w-full h-auto object-contain" />
           </div>
         )}
 

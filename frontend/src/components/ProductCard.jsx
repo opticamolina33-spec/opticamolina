@@ -12,7 +12,7 @@ const readFavs = () => {
   }
 };
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, imgLoading = 'lazy' }) => {
   const { add } = useCart();
   const [fav, setFav] = useState(() => readFavs().includes(product.id));
   const { brand, model } = splitName(product);
@@ -50,7 +50,8 @@ const ProductCard = ({ product }) => {
           <img
             src={image}
             alt={product.nombre}
-            loading="lazy"
+            loading={imgLoading}
+            decoding="async"
             className="absolute inset-0 w-full h-full object-contain p-6 md:p-8 mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
           />
         )}

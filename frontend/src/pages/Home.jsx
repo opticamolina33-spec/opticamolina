@@ -180,6 +180,7 @@ const Home = () => {
             <img
               src={firstImage(featured)}
               alt={featured.nombre}
+              fetchPriority="high"
               className="absolute inset-x-[8%] top-[14%] w-[84%] h-[62%] object-contain mix-blend-multiply"
             />
           )}
@@ -303,7 +304,10 @@ const Home = () => {
         <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12">
           {loading
             ? [...Array(8)].map((_, i) => <ProductSkeleton key={i} />)
-            : visible.map((product) => <ProductCard key={product.id} product={product} />)}
+            : visible.map((product, idx) => (
+                // Primera fila carga eager, el resto lazy
+                <ProductCard key={product.id} product={product} imgLoading={idx < 4 ? 'eager' : 'lazy'} />
+              ))}
         </div>
 
         {!loading && filtered.length === 0 && (
