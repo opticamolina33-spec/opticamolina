@@ -1,83 +1,49 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import ProductSkeleton from '../components/ProductSkeleton';
 import Footer from '../components/Footer';
 
-const CategoryPage = ({ allCategories }) => {
+const CategoryPage = () => {
   const { id } = useParams();
-
   const [products, setProducts] = useState([]);
-  const [category, setCategory] = useState({ id, name: "Categoría" });
+  const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Buscar categoría en allCategories si está disponible
-    const catFromList = allCategories?.find((c) => c.id.toString() === id.toString());
-    if (catFromList) {
-      setCategory(catFromList);
-    }
-
-    fetchProducts();
-  }, [id, allCategories]);
-
-  const fetchProducts = async () => {
-    try {
-      const res = await api.get(`/public/products/category/${id}`);
-      setProducts(res.data);
-
-      // Si no se encontró la categoría en allCategories, tomar nombre desde el primer producto
-      if (!allCategories || !allCategories.find((c) => c.id.toString() === id.toString())) {
-        if (res.data.length > 0 && res.data[0].category) {
-          setCategory(res.data[0].category);
-        }
-      }
-    } catch (error) {
-      console.error("Error cargando productos de la categoría:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setLoading(true);
+    Promise.all([api.get(`/public/products/category/${id}`), api.get('/public/categories')])
+      .then(([productsRes, categoriesRes]) => {
+        setProducts(productsRes.data || []);
+        setCategory(categoriesRes.data?.find((c) => String(c.id) === String(id)) || productsRes.data?.[0]?.category || null);
+      })
+      .catch((error) => console.error('Error cargando productos de la categoría:', error))
+      .finally(() => setLoading(false));
+  }, [id]);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen">
+      <section className="max-w-[1320px] mx-auto px-4 md:px-8 pt-10 md:pt-16">
+        <Link to="/" className="label-mono text-[10px] text-muted hover:text-ink">← Inicio</Link>
+        <span className="label-mono block mt-6 text-[10px] md:text-[11px] text-muted">
+          {loading ? 'Cargando' : `${products.length} modelos`}
+        </span>
+        <h1 className="font-display text-[40px] leading-none md:text-[64px] mt-2">{category?.name || 'Categoría'}</h1>
+      </section>
 
-      {/* HERO / HEADER */}
-      <div className="py-20 px-6 border-b border-[#1a1a1a]">
-        <div className="container mx-auto">
-          <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tight">
-            {category?.name}
-          </h1>
-          <p className="text-gray-500 mt-2 text-sm uppercase tracking-widest">
-            Explorá la colección completa
-          </p>
-        </div>
-      </div>
-
-      <main className="container mx-auto px-6 md:px-12 py-20">
+      <main className="max-w-[1320px] mx-auto px-4 md:px-8 py-10 md:py-14">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
-            {[...Array(8)].map((_, i) => (
-              <ProductSkeleton key={i} />
-            ))}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12">
+            {[...Array(8)].map((_, i) => <ProductSkeleton key={i} />)}
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-32">
-            <h3 className="text-xl text-gray-400 italic uppercase">
-              Sin productos en esta categoría
-            </h3>
+          <div className="text-center py-24 rounded-[28px] bg-white/50 border border-black/5">
+            <p className="font-display text-2xl">Sin productos en esta categoría</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-16">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="group transition-all duration-500 hover:scale-[1.02]"
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-8 md:gap-x-5 md:gap-y-12">
+            {products.map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
         )}
       </main>

@@ -1,176 +1,96 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FiArrowUpRight } from 'react-icons/fi';
 import api from '../api/axios';
+import { formatPrice, parsePromoTitle } from '../lib/catalog';
 
-const PromocionBanner = () => {
+// Bloque "Liquidación" + marcas + disponibilidad inmediata.
+const PromocionBanner = ({ brands = [], onBrand }) => {
   const [promociones, setPromociones] = useState([]);
   const [current, setCurrent] = useState(0);
-  const [loaded, setLoaded] = useState(false);
-  const intervalRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    api.get('/public/promociones')
-      .then(res => {
-        setPromociones(res.data);
-        setLoaded(true);
-      })
-      .catch(() => setLoaded(true));
+    api.get('/public/promociones').then((res) => setPromociones(res.data || [])).catch(() => {});
   }, []);
 
-  // Auto-slide cada 6 segundos si hay más de 1 promo
   useEffect(() => {
     if (promociones.length <= 1) return;
-    intervalRef.current = setInterval(() => {
-      setCurrent(prev => (prev + 1) % promociones.length);
-    }, 6000);
-    return () => clearInterval(intervalRef.current);
+    const t = setInterval(() => setCurrent((c) => (c + 1) % promociones.length), 6000);
+    return () => clearInterval(t);
   }, [promociones]);
 
-  if (!loaded || promociones.length === 0) return null;
-
   const promo = promociones[current];
-
-  // Paletas de fondo predefinidas (se elige por colorFondo o por índice)
-  const palettes = {
-    'zinc-pink':   'from-zinc-950 via-zinc-900 to-pink-950',
-    'slate-rose':  'from-slate-950 via-slate-900 to-rose-950',
-    'gray-indigo': 'from-gray-950 via-gray-900 to-indigo-950',
-    'stone-amber': 'from-stone-950 via-stone-900 to-amber-950',
-    'black-purple':'from-black via-zinc-950 to-purple-950',
-  };
-  const paletteKeys = Object.keys(palettes);
-  const gradientClass = palettes[promo.colorFondo] || palettes[paletteKeys[current % paletteKeys.length]];
+  const { title, subtitle } = promo
+    ? parsePromoTitle(promo.titulo)
+    : { title: 'Liquidación de lentes de sol', subtitle: 'Hasta 40% OFF' };
 
   return (
-    <section className="relative w-full overflow-hidden">
-      {/* ── Fondo degradado ── */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass} transition-all duration-1000`} />
+    <section id="liquidacion" className="max-w-[1320px] mx-auto px-4 md:px-8 grid lg:grid-cols-[1.75fr_1fr] gap-4 md:gap-5 scroll-mt-32">
+      {/* Liquidación */}
+      <div className="relative overflow-hidden rounded-[28px] bg-ink text-white p-7 md:p-10 min-h-[340px] md:min-h-[420px] flex flex-col">
+        <span className="label-mono text-[10px] md:text-[11px] text-pink-400">Promoción especial</span>
+        <h2 className="font-display text-[40px] leading-[0.95] md:text-[56px] mt-4 md:max-w-[60%] relative z-10">{title}</h2>
+        <p className="mt-5 text-sm md:text-[15px] text-white/80 md:max-w-[45%] relative z-10">
+          {subtitle ? `${subtitle} en modelos seleccionados.` : 'Modelos seleccionados.'}
+          <span className="hidden md:inline"> Livianos y con estuche incluido.</span>
+        </p>
 
-      {/* Ruido sutil (grano) */}
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '128px 128px',
-        }}
-      />
-
-      {/* Orbe decorativo */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-white/[0.03] blur-3xl pointer-events-none" />
-
-      {/* ── Contenido ── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-
-          {/* Columna izquierda: texto */}
-          <div className="flex flex-col justify-center order-2 lg:order-1">
-            {/* Etiqueta - Tamaño de fuente reducido a text-[8px] y tracking más ajustado */}
-            <div className="inline-flex items-center gap-2 mb-4 w-fit">
-              <span className="w-2 h-2 rounded-full bg-pink-400 animate-pulse" />
-              <span className="text-[8px] font-black uppercase tracking-[0.3em] text-pink-300">
-                Promoción especial
-              </span>
+        <div className="mt-auto pt-8 flex items-end gap-4 relative z-10">
+          {promo?.precio != null && (
+            <div>
+              <span className="text-xs text-white/60">Desde</span>
+              <p className="font-display text-4xl md:text-[44px] leading-none">{formatPrice(promo.precio)}</p>
             </div>
-
-            {/* Título - Tamaños de fuente reducidos (text-3xl a text-6xl) */}
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-white tracking-tighter italic uppercase leading-tight mb-6">
-              {promo.titulo}
-            </h2>
-
-            {/* Descripción - Tamaño de fuente reducido a text-xs y text-sm */}
-            {promo.descripcion && (
-              <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed max-w-md mb-8">
-                {promo.descripcion}
-              </p>
-            )}
-
-            {/* Precio + CTA */}
-            <div className="flex flex-wrap items-center gap-6">
-              {promo.precio && (
-                <div className="flex flex-col">
-                  {/* Etiqueta de precio reducida */}
-                  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Precio</span>
-                  <span className="text-4xl font-black text-white tracking-tighter italic">
-                    ${promo.precio.toLocaleString('es-AR')}
-                  </span>
-                  {/* Etiqueta ARS reducida */}
-                  <span className="text-[8px] text-gray-500 font-bold">ARS</span>
-                </div>
-              )}
-
-              <button
-                onClick={() => navigate(`/promocion/${promo.id}`)}
-                className="group relative overflow-hidden bg-white text-black font-black py-4 px-10 rounded-2xl text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:bg-pink-50 active:scale-95 shadow-2xl shadow-white/10"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Ver promoción
-                  <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* Columna derecha: dos imágenes con imágenes MÁS GRANDES */}
-          <div className="relative flex items-center justify-center order-1 lg:order-2 min-h-[280px] md:min-h-[380px]">
-
-            {/* Imagen 2 (fondo, ladeada) - Padding reducido para imagen más grande */}
-            {promo.imagen2Url && (
-              <div
-                className="absolute right-0 top-2 w-[42%] md:w-[38%] rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/10"
-                style={{ transform: 'rotate(7deg) translateY(14px)', padding: '2%' }} // Padding reducido
-              >
-                <img
-                  src={promo.imagen2Url}
-                  alt="Promo imagen 2"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-            )}
-
-            {/* Imagen 1 (frente, prominente) - Padding reducido para imagen más grande y ancho aumentado */}
-            {promo.imagen1Url && (
-              <div
-                className="relative left-0 w-[50%] md:w-[46%] rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10" // Ancho ligeramente mayor
-                style={{ transform: 'rotate(-5deg) translateY(-10px)', padding: '2%' }} // Padding reducido
-              >
-                <img
-                  src={promo.imagen1Url}
-                  alt="Promo imagen 1"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-            )}
-
-            {/* Glow de fondo entre las imágenes */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-40 h-40 bg-pink-500/15 rounded-full blur-3xl" />
-            </div>
-          </div>
+          )}
+          <Link
+            to={promo ? `/promocion/${promo.id}` : '/#catalogo'}
+            className="shrink-0 whitespace-nowrap rounded-full bg-white text-ink px-5 md:px-6 h-11 md:h-12 grid place-items-center text-sm font-medium hover:bg-pink-100 transition-colors"
+          >
+            <span className="hidden md:inline">Ver la liquidación</span>
+            <span className="md:hidden">Ver promo</span>
+          </Link>
         </div>
 
-        {/* ── Dots de navegación ── */}
+        {promo?.imagen1Url && (
+          <div className="hidden md:block absolute right-[-4%] bottom-[-8%] w-[52%] rotate-[-6deg] rounded-3xl bg-white p-6 shadow-2xl">
+            <img src={promo.imagen1Url} alt="" className="w-full h-auto object-contain" />
+          </div>
+        )}
+
         {promociones.length > 1 && (
-          <div className="flex justify-center gap-2 mt-12">
+          <div className="absolute top-7 right-7 flex gap-1.5 z-10">
             {promociones.map((_, i) => (
               <button
                 key={i}
-                onClick={() => {
-                  setCurrent(i);
-                  clearInterval(intervalRef.current);
-                }}
-                className={`transition-all duration-300 rounded-full ${
-                  i === current
-                    ? 'w-6 h-2 bg-white'
-                    : 'w-2 h-2 bg-white/30 hover:bg-white/50'
-                }`}
+                onClick={() => setCurrent(i)}
+                aria-label={`Promoción ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all ${i === current ? 'w-5 bg-white' : 'w-1.5 bg-white/30'}`}
               />
             ))}
           </div>
         )}
+      </div>
+
+      <div className="hidden lg:grid grid-rows-2 gap-5">
+        {/* Marcas */}
+        <div id="marcas" className="rounded-[28px] bg-white/70 border border-black/5 p-8 scroll-mt-32">
+          <span className="label-mono text-[10px] text-muted">Nuestras marcas</span>
+          <ul className="mt-4 space-y-1">
+            {brands.slice(0, 4).map((b) => (
+              <li key={b}>
+                <button onClick={() => onBrand?.(b)} className="font-display text-[32px] leading-tight flex items-center gap-2 hover:text-magenta transition-colors">
+                  {b} <FiArrowUpRight size={26} strokeWidth={1.5} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Disponibilidad inmediata */}
+        <div className="rounded-[28px] bg-magenta text-white p-8 flex flex-col">
+          <span className="label-mono text-[10px] text-white/70">Disponibilidad inmediata</span>
+          <p className="font-display text-[26px] leading-[1.05] mt-auto">Probátelos en el local y llevalos en el día.</p>
+        </div>
       </div>
     </section>
   );

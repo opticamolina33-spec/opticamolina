@@ -1,1 +1,57 @@
 @import "tailwindcss";
+
+@theme {
+  --color-paper: #f4f3f0;
+  --color-ink: #141414;
+  --color-stone: #e7e5e1;
+  --color-stone-2: #dcd9d4;
+  --color-muted: #6f6c67;
+  --color-magenta: #c2185b;
+  --color-magenta-dark: #9c1249;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", "Inter", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Titulares anchos y pesados del rediseño (en layer components para que las utilidades de tamaño los pisen) */
+@layer components {
+.font-display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 125;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}

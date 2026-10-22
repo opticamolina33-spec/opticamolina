@@ -1,6 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
+import { useCart } from '../context/CartContext';
+import { formatPrice, productBadge, splitName } from '../lib/catalog';
+import Footer from './Footer';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -12,6 +15,7 @@ const ProductDetail = () => {
   const [imageGallery, setImageGallery] = useState([]); // Nuevo estado para la lista de imágenes
   
   const brickControllerRef = useRef(null);
+  const { add } = useCart();
 
   useEffect(() => {
     api.get(`/public/products/${id}`)
@@ -99,135 +103,160 @@ const ProductDetail = () => {
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#FDFDFD]">
-      <div className="w-16 h-1 bg-gray-100 overflow-hidden">
-        <div className="w-full h-full bg-[#4a0e2e] animate-pulse"></div>
+    <div className="flex flex-col items-center justify-center min-h-[70vh]">
+      <div className="w-16 h-1 bg-stone overflow-hidden rounded-full">
+        <div className="w-full h-full bg-magenta animate-pulse"></div>
       </div>
-      <p className="mt-4 text-xs font-black tracking-[0.3em] text-gray-400 uppercase">Ajustando cristales...</p>
+      <p className="mt-4 label-mono text-muted">Ajustando cristales...</p>
     </div>
   );
 
+  if (!product) return (
+    <div className="min-h-[70vh] grid place-items-center text-center px-6">
+      <div>
+        <p className="font-display text-3xl">Producto no encontrado</p>
+        <button onClick={() => navigate('/')} className="mt-6 rounded-full bg-ink text-white h-12 px-6 text-sm font-semibold">Volver al inicio</button>
+      </div>
+    </div>
+  );
+
+  const { brand, model } = splitName(product);
+  const badge = productBadge(product);
+  const detalles = (product.descripcion || '').split('\n').map((l) => l.trim()).filter(Boolean);
+  const specs = [
+    ['Color', product.color],
+    ['Material', product.material],
+    ['Medida', product.tamanio],
+    ['Forma', product.forma],
+  ].filter(([, v]) => v);
+
   return (
-    <div className="min-h-screen bg-[#FDFDFD] pb-20">
-      <div className="max-w-7xl mx-auto px-4 pt-10">
-        <button 
+    <div className="min-h-screen">
+      <div className="max-w-[1320px] mx-auto px-4 md:px-8 pt-8 md:pt-12 pb-20">
+        <button
           onClick={() => navigate(-1)}
-          className="group flex items-center text-gray-400 hover:text-black mb-10 transition-colors text-xs font-bold uppercase tracking-widest"
+          className="label-mono text-[10px] text-muted hover:text-ink mb-8 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-          </svg>
-          Volver a la colección
+          ← Volver a la colección
         </button>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          
-          {/* GALERÍA DE IMÁGENES ESTILO VULK */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Thumbnails (Miniaturas a la izquierda) */}
+        <div className="grid lg:grid-cols-[1.15fr_1fr] gap-8 lg:gap-16 items-start">
+
+          {/* GALERÍA */}
+          <div className="flex flex-col md:flex-row gap-4">
             {imageGallery.length > 1 && (
-              <div className="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible order-2 md:order-1">
+              <div className="flex md:flex-col gap-3 overflow-x-auto scrollbar-hide order-2 md:order-1">
                 {imageGallery.map((imgUrl, index) => (
-                  <button 
+                  <button
                     key={index}
                     onClick={() => setMainImage(imgUrl)}
-                    className={`w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
-                      mainImage === imgUrl ? 'border-[#4a0e2e] opacity-100 shadow-md' : 'border-gray-100 opacity-60 hover:opacity-100'
+                    className={`w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden bg-stone border-2 transition-all ${
+                      mainImage === imgUrl ? 'border-ink' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={imgUrl} alt={`Vista ${index + 1}`} className="w-full h-full object-cover" />
+                    <img src={imgUrl} alt={`Vista ${index + 1}`} className="w-full h-full object-contain p-1.5 mix-blend-multiply" />
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Imagen Principal */}
-            <div className="flex-1 relative bg-white rounded-3xl p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-gray-50 flex items-center justify-center order-1 md:order-2">
-              <img 
-                src={mainImage || `https://via.placeholder.com/600x600?text=${product.nombre}`} 
-                alt={product.nombre}
-                className="w-full h-auto object-contain mix-blend-multiply transition-opacity duration-500"
-              />
+            <div className="flex-1 relative aspect-square rounded-[28px] bg-stone flex items-center justify-center order-1 md:order-2 overflow-hidden">
+              {badge && (
+                <span className={`absolute top-5 left-5 rounded-full px-3 py-1 text-xs font-medium ${badge.accent ? 'bg-magenta text-white' : 'bg-white/80'}`}>
+                  {badge.label}
+                </span>
+              )}
+              {mainImage && (
+                <img
+                  src={mainImage}
+                  alt={product.nombre}
+                  className="w-full h-full object-contain p-10 md:p-16 mix-blend-multiply"
+                />
+              )}
             </div>
           </div>
 
           {/* DATOS DEL PRODUCTO */}
-          <div className="flex flex-col justify-center">
-            <span className="text-[#801a4d] font-black tracking-[0.3em] text-xs uppercase mb-4 border-l-4 border-[#4a0e2e] pl-4">
-              {product.category?.name || 'Handmade Eyewear'}
-            </span>
-            
-            <h1 className="text-5xl font-black text-slate-900 mb-2 tracking-tight uppercase">
-              {product.nombre}
-            </h1>
-            
-            <p className="text-gray-500 font-bold tracking-widest text-xs mb-8 uppercase">
-              REF: {product.marca || 'Molina Exclusive'}
-            </p>
-            
-            <div className="bg-gray-50 p-6 rounded-2xl mb-10 border border-gray-100">
-              <h4 className="text-xs font-black uppercase tracking-widest mb-3 text-slate-900 border-b border-gray-200 pb-2">Descripción</h4>
-              <p className="text-gray-600 text-sm font-light leading-relaxed">
-                {product.descripcion}
-              </p>
-              
-              {/* Detalles extra si existen en el producto */}
-              <ul className="mt-4 space-y-2 text-xs text-gray-500 font-medium">
-                {product.color && <li><strong className="text-slate-900">Color:</strong> {product.color}</li>}
-                {product.material && <li><strong className="text-slate-900">Material:</strong> {product.material}</li>}
-                {product.tamanio && <li><strong className="text-slate-900">Talle/Medida:</strong> {product.tamanio}</li>}
-              </ul>
-            </div>
+          <div className="flex flex-col">
+            <span className="label-mono text-muted">{brand} · {product.category?.name || 'Óptica Molina'}</span>
+            <h1 className="font-display text-[44px] md:text-[64px] leading-[0.95] mt-3">{model}</h1>
 
-            <div className="bg-[#1a1a1a] p-8 rounded-3xl text-white mb-10 shadow-2xl relative overflow-hidden">
-              <p className="text-gray-400 text-xs uppercase tracking-widest mb-2">Precio Final</p>
-              <div className="flex items-baseline gap-3">
-                <span className="text-5xl font-black tracking-tighter italic">
-                  ${product.precio?.toLocaleString('es-AR')}
+            <div className="mt-6 flex items-baseline gap-3">
+              {product.tieneDescuento && product.porcentajeDescuento > 0 && (
+                <span className="text-muted line-through">
+                  {formatPrice(product.precio / (1 - product.porcentajeDescuento / 100))}
                 </span>
-                <span className="text-gray-400 text-sm">ARS</span>
-              </div>
+              )}
+              <span className="font-display text-4xl">{formatPrice(product.precio)}</span>
+              <span className="text-sm text-muted">ARS</span>
             </div>
 
-            {!showBrick ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button 
-                  onClick={() => handlePayment('card')}
-                  className="bg-white border-2 border-black text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all shadow-md active:scale-95"
-                >
-                  Tarjeta de Crédito / Débito
-                </button>
-
-                <button 
-                  onClick={() => handlePayment('mercadopago')}
-                  className="bg-[#009EE3] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#008bc7] transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95"
-                >
-                  Mercado Pago
-                </button>
-              </div>
-            ) : (
-              <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl animate-in slide-in-from-bottom-4 duration-500">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="font-black text-sm uppercase tracking-widest">Pago con Tarjeta</h3>
-                  <button 
-                    onClick={() => {setShowBrick(false); brickControllerRef.current = null;}}
-                    className="text-[10px] font-bold text-red-500 uppercase tracking-tighter"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-                <div id="cardPaymentBrick_container"></div>
-              </div>
+            {detalles.length > 0 && (
+              <ul className="mt-8 space-y-2 text-[15px]">
+                {detalles.map((d, i) => (
+                  <li key={i} className="flex gap-3"><span className="text-magenta">—</span>{d}</li>
+                ))}
+              </ul>
             )}
 
-            <div className="mt-12 flex flex-wrap gap-8 border-t border-gray-100 pt-8">
-              <div className="flex items-center gap-3 italic text-[10px] text-gray-400 uppercase tracking-widest">
-                Protección UV400 • Lentes Certificados • Optica Molina
-              </div>
+            {specs.length > 0 && (
+              <dl className="mt-8 grid grid-cols-[110px_1fr] gap-y-2 text-sm border-t border-black/10 pt-6">
+                {specs.map(([k, v]) => (
+                  <div key={k} className="contents">
+                    <dt className="text-muted">{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            <div className="mt-10 space-y-3">
+              <button
+                onClick={() => add(product)}
+                disabled={product.stock === 0}
+                className="w-full h-14 rounded-full bg-ink text-white font-semibold hover:bg-magenta transition-colors disabled:opacity-40"
+              >
+                {product.stock === 0 ? 'Agotado' : 'Agregar al carrito'}
+              </button>
+
+              {!showBrick ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => handlePayment('card')}
+                    className="h-12 rounded-full border border-ink/20 text-sm font-medium hover:bg-white transition-colors"
+                  >
+                    Tarjeta de crédito / débito
+                  </button>
+                  <button
+                    onClick={() => handlePayment('mercadopago')}
+                    className="h-12 rounded-full bg-[#009EE3] text-white text-sm font-semibold hover:bg-[#008bc7] transition-colors"
+                  >
+                    Mercado Pago
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-white p-6 rounded-[28px] border border-black/5 shadow-xl">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-semibold">Pago con tarjeta</h3>
+                    <button
+                      onClick={() => {setShowBrick(false); brickControllerRef.current = null;}}
+                      className="text-sm text-magenta"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                  <div id="cardPaymentBrick_container"></div>
+                </div>
+              )}
             </div>
+
+            <p className="mt-10 pt-6 border-t border-black/10 label-mono text-[10px] text-muted">
+              Protección UV400 · Lentes certificados · Retiro en el local o envío a todo el país
+            </p>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

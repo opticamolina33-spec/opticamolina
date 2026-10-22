@@ -1,87 +1,85 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiHeart } from 'react-icons/fi';
+import { useCart } from '../context/CartContext';
+import { firstImage, formatPrice, productBadge, specsLine, splitName } from '../lib/catalog';
+
+const readFavs = () => {
+  try {
+    return JSON.parse(localStorage.getItem('favoritos')) || [];
+  } catch {
+    return [];
+  }
+};
 
 const ProductCard = ({ product }) => {
-  
-  const formatCurrency = (value) => {
-    return value?.toLocaleString('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-      minimumFractionDigits: 0,
-    }) || '$ 0';
+  const { add } = useCart();
+  const [fav, setFav] = useState(() => readFavs().includes(product.id));
+  const { brand, model } = splitName(product);
+  const badge = productBadge(product);
+  const image = firstImage(product);
+  const agotado = product.stock === 0;
+
+  const toggleFav = (e) => {
+    e.preventDefault();
+    const next = fav ? readFavs().filter((id) => id !== product.id) : [...readFavs(), product.id];
+    try {
+      localStorage.setItem('favoritos', JSON.stringify(next));
+    } catch {
+      // ignorar
+    }
+    setFav(!fav);
   };
 
-  // Extraemos la primera imagen de forma segura
-  const primeraImagen = Array.isArray(product.imagenUrl) && product.imagenUrl.length > 0 
-    ? product.imagenUrl[0] 
-    : (typeof product.imagenUrl === 'string' ? product.imagenUrl : `https://via.placeholder.com/400x300?text=${product.nombre}`);
-
   return (
-    <Link 
-      to={`/product/${product.id}`} 
-      className="group block h-full"
-    >
-      <div className="relative bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_30px_rgba(74,14,46,0.15)] transition-all duration-500 overflow-hidden border border-gray-100 flex flex-col h-full">
-        
-        {/* Badge de Descuento */}
-        {product.tieneDescuento && (
-          <div className="absolute top-4 left-4 z-10 bg-[#4a0e2e] text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg tracking-widest uppercase">
-            {product.porcentajeDescuento}% OFF
-          </div>
-        )}
-
-        {/* Contenedor de Imagen */}
-        <div className="relative h-64 overflow-hidden bg-[#ffffff]">
-          <img 
-            src={primeraImagen} 
-            alt={product.nombre}
-            className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300"></div>
-        </div>
-
-        {/* Contenido */}
-        <div className="p-6 flex-grow flex flex-col">
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#801a4d] mb-2">
-            {product.category?.name || 'Colección Exclusive'}
+    <div className="group flex flex-col h-full">
+      <Link to={`/product/${product.id}`} className="relative block aspect-square rounded-[22px] bg-stone overflow-hidden">
+        {badge && (
+          <span className={`absolute top-3 left-3 z-10 rounded-full px-2.5 py-1 text-[10px] font-medium ${badge.accent ? 'bg-magenta text-white' : 'bg-white/80 text-ink'}`}>
+            {badge.label}
           </span>
-          
-          <h3 className="text-xl font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-[#4a0e2e] transition-colors duration-300">
-            {product.nombre}
-          </h3>
-          
-          <p className="text-gray-400 text-sm mb-6 line-clamp-2 font-light leading-relaxed">
-            {product.descripcion || 'Diseño ergonómico y cristales con protección premium.'}
-          </p>
-          
-          <div className="flex justify-between items-end mt-auto">
-            <div className="flex flex-col">
-              {product.tieneDescuento && (
-                <span className="text-xs text-gray-400 line-through mb-1">
-                  {formatCurrency(product.precio * 1.2)} 
-                </span>
-              )}
-              <span className="text-2xl font-black text-slate-900 tracking-tight">
-                {formatCurrency(product.precio)}
-              </span>
-            </div>
+        )}
+        <button
+          onClick={toggleFav}
+          aria-label={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          className="absolute top-3 right-3 z-10 h-8 w-8 grid place-items-center rounded-full hover:bg-white/70 transition-colors"
+        >
+          <FiHeart size={15} className={fav ? 'fill-magenta text-magenta' : ''} />
+        </button>
+        {image && (
+          <img
+            src={image}
+            alt={product.nombre}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-contain p-6 md:p-8 mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
+        {agotado && (
+          <span className="absolute inset-x-3 bottom-3 rounded-full bg-ink text-white text-[10px] font-semibold tracking-widest text-center py-1.5">
+            AGOTADO
+          </span>
+        )}
+      </Link>
 
-            <div className="bg-[#1a1a1a] group-hover:bg-[#4a0e2e] text-white p-3 rounded-xl transition-all duration-300 shadow-lg transform group-hover:rotate-12">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-          </div>
+      <div className="pt-4 px-1 flex flex-col flex-1">
+        <span className="label-mono text-[10px] text-muted">{brand}</span>
+        <Link to={`/product/${product.id}`} className="mt-1 text-[15px] md:text-base font-medium leading-snug hover:text-magenta transition-colors line-clamp-1">
+          {model}
+        </Link>
+        <p className="hidden md:block mt-1 text-xs text-muted line-clamp-1">{specsLine(product)}</p>
 
-          {product.stock === 0 && (
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center">
-              <span className="bg-[#1a1a1a] text-white px-6 py-2 rounded-full font-bold text-xs tracking-widest shadow-2xl">
-                AGOTADO
-              </span>
-            </div>
-          )}
+        <div className="mt-3 flex items-center justify-between gap-2 md:mt-auto md:pt-4">
+          <span className="font-display text-[15px] md:text-base tracking-normal">{formatPrice(product.precio)}</span>
+          <button
+            onClick={() => add(product)}
+            disabled={agotado}
+            className="hidden md:inline-flex rounded-full border border-ink/25 px-4 py-1.5 text-xs font-medium hover:bg-ink hover:text-white hover:border-ink transition-colors disabled:opacity-40 disabled:pointer-events-none"
+          >
+            Agregar
+          </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 
