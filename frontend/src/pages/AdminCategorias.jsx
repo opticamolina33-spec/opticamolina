@@ -147,7 +147,7 @@ const AdminCategorias = () => {
               Categorías
             </h1>
             <p className="text-[#801a4d] text-[10px] font-black tracking-[0.4em] uppercase mt-2">
-              Óptica Molina — Gestión de Colecciones
+              Optica Molina — Gestión de Colecciones
             </p>
           </div>
           <div className="text-[10px] font-black text-gray-600 uppercase tracking-widest bg-[#111] px-4 py-2 rounded-xl border border-[#1a1a1a]">

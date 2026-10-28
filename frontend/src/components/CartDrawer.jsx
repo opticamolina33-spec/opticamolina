@@ -16,7 +16,7 @@ const CartDrawer = () => {
     setPaying(true);
     try {
       const response = await api.post('/payments/create', {
-        title: `Óptica Molina - ${resumen}`.slice(0, 250),
+        title: `Optica Molina - ${resumen}`.slice(0, 250),
         price: total,
         quantity: 1,
       });

@@ -97,7 +97,7 @@ const AdminPanel = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6 border-b border-[#1a1a1a] pb-10">
           <div>
             <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">Gestión de Inventario</h1>
-            <p className="text-[#801a4d] text-[10px] font-black tracking-[0.4em] uppercase mt-2">Óptica Molina — Control Center</p>
+            <p className="text-[#801a4d] text-[10px] font-black tracking-[0.4em] uppercase mt-2">Optica Molina — Control Center</p>
           </div>
           
           <div className="flex gap-4">

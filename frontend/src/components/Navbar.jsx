@@ -66,7 +66,7 @@ const Navbar = () => {
     { label: 'Armazones', to: armazonesCat ? `/categoria/${armazonesCat.id}` : '/#catalogo' },
     { label: 'Marcas', to: '/#marcas' },
     { label: 'Liquidación', to: '/#liquidacion', accent: true },
-    { label: 'La óptica', to: '/#visitanos' },
+    { label: 'La optica', to: '/#visitanos' },
   ];
 
   const handleLogout = () => {
@@ -101,7 +101,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-3 shrink-0 mx-auto lg:mx-0">
             <img src="/IMG_3486.jpg" alt="" className="hidden lg:block h-9 w-9 rounded-md object-cover" />
             <span className="font-display text-[17px] md:text-lg tracking-[0.08em] text-magenta lg:text-ink lg:font-semibold">
-              ÓPTICA MOLINA
+              OPTICA MOLINA
             </span>
           </Link>
 
@@ -195,7 +195,7 @@ const Navbar = () => {
           <div className="absolute inset-0 bg-black/40" onClick={() => setMenuOpen(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-[82%] max-w-sm bg-paper p-6 flex flex-col">
             <div className="flex items-center justify-between mb-10">
-              <span className="font-display text-lg tracking-[0.08em] text-magenta">ÓPTICA MOLINA</span>
+              <span className="font-display text-lg tracking-[0.08em] text-magenta">OPTICA MOLINA</span>
               <button onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="p-1">
                 <FiX size={22} />
               </button>

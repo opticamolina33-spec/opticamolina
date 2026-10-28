@@ -34,7 +34,7 @@ const PromocionDetail = () => {
           const paymentPayload = {
             token: formData.token,
             transaction_amount: formData.transaction_amount,
-            description: `Óptica Molina - Promo: ${promo.titulo}`,
+            description: `Optica Molina - Promo: ${promo.titulo}`,
             installments: formData.installments,
             payment_method_id: formData.payment_method_id,
             payer: { email: formData.payer.email },
@@ -207,7 +207,7 @@ const PromocionDetail = () => {
             )}
 
             <div className="mt-10 pt-8 border-t border-gray-100 text-[10px] text-gray-400 uppercase tracking-widest italic">
-              Protección UV400 • Lentes Certificados • Óptica Molina
+              Protección UV400 • Lentes Certificados • Optica Molina
             </div>
           </div>
         </div>

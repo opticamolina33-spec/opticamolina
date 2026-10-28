@@ -53,7 +53,7 @@ const ProductDetail = () => {
           const paymentPayload = {
             token: formData.token,
             transaction_amount: formData.transaction_amount,
-            description: `Óptica Molina - ${product.nombre}`,
+            description: `Optica Molina - ${product.nombre}`,
             installments: formData.installments,
             payment_method_id: formData.payment_method_id,
             payer: { email: formData.payer.email }
@@ -178,7 +178,7 @@ const ProductDetail = () => {
 
           {/* DATOS DEL PRODUCTO */}
           <div className="flex flex-col">
-            <span className="label-mono text-muted">{brand} · {product.category?.name || 'Óptica Molina'}</span>
+            <span className="label-mono text-muted">{brand} · {product.category?.name || 'Optica Molina'}</span>
             <h1 className="font-display text-[44px] md:text-[64px] leading-[0.95] mt-3">{model}</h1>
 
             <div className="mt-6 flex items-baseline gap-3">

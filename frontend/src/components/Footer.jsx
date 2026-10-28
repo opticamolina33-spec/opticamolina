@@ -7,9 +7,9 @@ const Footer = () => (
     <div className="max-w-[1320px] mx-auto px-6 md:px-8 pt-16 pb-10">
       <div className="grid gap-10 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
         <div>
-          <p className="font-display text-3xl md:text-4xl tracking-[0.02em]">ÓPTICA MOLINA</p>
+          <p className="font-display text-3xl md:text-4xl tracking-[0.02em]">OPTICA MOLINA</p>
           <p className="mt-4 text-sm text-white/60 max-w-xs leading-relaxed">
-            Su óptica de confianza en Córdoba. Colecciones de autor, disponibilidad inmediata y envíos a todo el país.
+            Su optica de confianza en Córdoba. Colecciones de autor, disponibilidad inmediata y envíos a todo el país.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ const Footer = () => (
       </div>
 
       <div className="mt-14 pt-6 border-t border-white/10 text-[11px] text-white/40">
-        © 2026 Óptica Molina · Vanguardia visual · Argentina
+        © 2026 Optica Molina · Vanguardia visual · Argentina
       </div>
     </div>
   </footer>

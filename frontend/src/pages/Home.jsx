@@ -129,7 +129,7 @@ const Home = () => {
       <section className="max-w-[1320px] mx-auto px-4 md:px-8 pt-8 md:pt-14 pb-8 md:pb-12 grid lg:grid-cols-[1fr_1.05fr] gap-8 lg:gap-12 items-center">
         <div>
           <span className="label-mono inline-block rounded-full border border-ink/40 px-4 py-1.5 text-[10px] md:text-[11px]">
-            Su óptica de confianza<span className="hidden md:inline"> · Córdoba</span>
+            Su optica de confianza<span className="hidden md:inline"> · Córdoba</span>
           </span>
           <h1 className="font-display text-[64px] leading-[0.92] md:text-[96px] lg:text-[104px] mt-6 md:mt-8">
             Ver más
@@ -385,7 +385,7 @@ const Home = () => {
 
 const MapFrame = () => (
   <iframe
-    title="Ubicación de Óptica Molina"
+    title="Ubicación de Optica Molina"
     src={`https://www.google.com/maps?q=${encodeURIComponent(`${STORE.address}, ${STORE.city}, Argentina`)}&z=16&output=embed`}
     className="w-full h-full border-0 grayscale-[0.85] contrast-[0.95]"
     loading="lazy"

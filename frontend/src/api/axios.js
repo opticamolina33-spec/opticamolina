@@ -7,7 +7,7 @@ const api = axios.create({
         : 'https://opticamolina-production-a367.up.railway.app/api'
 });
 
-// Interceptor para el token (Fundamental para el Admin de la Óptica)
+// Interceptor para el token (Fundamental para el Admin de la Optica)
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {

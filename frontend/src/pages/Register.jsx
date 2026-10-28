@@ -28,7 +28,7 @@ const Register = () => {
         address,
         birthDate
       });
-      alert("¡Cuenta de Óptica Molina creada con éxito!");
+      alert("¡Cuenta de Optica Molina creada con éxito!");
       navigate('/login');
     } catch (err) {
       setError(err.response?.data || 'Error al intentar registrarse.');

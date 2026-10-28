@@ -41,7 +41,7 @@ export const splitName = (product) => {
     return { brand: titleCase(brand), model: titleCase(rest.join('-').trim()) || nombre };
   }
   const [brand, ...rest] = nombre.split(' ');
-  return { brand: titleCase(brand || 'Óptica Molina'), model: rest.length ? titleCase(rest.join(' ')) : nombre };
+  return { brand: titleCase(brand || 'Optica Molina'), model: rest.length ? titleCase(rest.join(' ')) : nombre };
 };
 
 // Descripción multilínea -> "Polarizado · Armazón y patillas G-Flex"

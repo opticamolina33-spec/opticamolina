@@ -28,7 +28,7 @@ const ForgotPassword = () => {
         
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Recuperar Acceso</h2>
-          <p className="text-gray-400 text-[10px] font-bold tracking-[0.2em] uppercase mt-2">Seguridad Visual Óptica Molina</p>
+          <p className="text-gray-400 text-[10px] font-bold tracking-[0.2em] uppercase mt-2">Seguridad Visual Optica Molina</p>
         </div>
 
         {message && <div className="bg-green-50 text-green-700 p-4 rounded-xl mb-6 text-xs font-bold uppercase tracking-tight italic border-l-4 border-green-500">{message}</div>}

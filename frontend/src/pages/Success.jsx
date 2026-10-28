@@ -16,7 +16,7 @@ const Success = () => (
       ¡PAGO CONFIRMADO!
     </h1>
     <p className="text-gray-500 max-w-md mx-auto mb-10 font-light leading-relaxed">
-      Gracias por elegir la distinción de <span className="font-bold text-[#4a0e2e]">Óptica Molina</span>. 
+      Gracias por elegir la distinción de <span className="font-bold text-[#4a0e2e]">Optica Molina</span>. 
       En breve recibirás un correo con el detalle de tu orden y el seguimiento del envío.
     </p>
     

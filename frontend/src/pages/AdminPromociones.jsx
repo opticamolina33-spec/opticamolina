@@ -62,7 +62,7 @@ const AdminPromociones = () => {
               Gestión de Promociones
             </h1>
             <p className="text-[#801a4d] text-[10px] font-black tracking-[0.4em] uppercase mt-2">
-              Óptica Molina — Banners Destacados
+              Optica Molina — Banners Destacados
             </p>
           </div>
           <button

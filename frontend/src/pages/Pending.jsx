@@ -28,7 +28,7 @@ const Pending = () => (
     </h1>
 
     <p className="text-gray-500 max-w-md mx-auto mb-10 font-light leading-relaxed">
-      Estamos procesando tu pago en <span className="font-bold text-[#4a0e2e]">Óptica Molina</span>. 
+      Estamos procesando tu pago en <span className="font-bold text-[#4a0e2e]">Optica Molina</span>. 
       Esto puede tardar unos instantes. Te avisaremos por correo cuando se confirme.
     </p>
 
